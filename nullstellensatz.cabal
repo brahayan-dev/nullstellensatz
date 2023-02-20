@@ -6,9 +6,9 @@ cabal-version: 1.12
 
 name:           nullstellensatz
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/nullstellensatz#readme>
-homepage:       https://github.com/githubuser/nullstellensatz#readme
-bug-reports:    https://github.com/githubuser/nullstellensatz/issues
+description:    Please see the README on GitHub at <https://github.com/brahayan-dev/nullstellensatz#readme>
+homepage:       https://github.com/brahayan-dev/nullstellensatz#readme
+bug-reports:    https://github.com/brahayan-dev/nullstellensatz/issues
 author:         Author name here
 maintainer:     example@example.com
 copyright:      2023 Author name here
@@ -21,11 +21,11 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/nullstellensatz
+  location: https://github.com/brahayan-dev/nullstellensatz
 
 library
   exposed-modules:
-      Lib
+      Skeleta
   other-modules:
       Paths_nullstellensatz
   hs-source-dirs:
