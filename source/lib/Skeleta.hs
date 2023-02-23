@@ -42,13 +42,12 @@ codify (Position n) =
    in codify_ n products []
 
 codify_ :: Int -> [Int] -> Code -> Code
+codify_ 0 _ representation = 0 : representation
 codify_ n products representation =
   let k = head products
       x = n `rem` k
       y = n `quot` k
-   in if null products
-        then 0 : representation
-        else codify_ x (tail products) (y : representation)
+   in codify_ x (tail products) (y : representation)
 
 getStructure :: Position -> Struct
 getStructure n =
@@ -59,19 +58,21 @@ getStructure n =
    in getStructure_ representation pairs []
 
 getStructure_ :: Code -> Struct -> Struct -> Struct
-getStructure_ rs ps s =
-  let openItem = head rs
-      [freeItem, closeItem] = head ps
+getStructure_ [] _ structure = structure
+getStructure_ representation pairs structure =
+  let openItem = head representation
+      [freeItem, closeItem] = head pairs
       newPair = [openItem, closeItem]
-      structure = newPair : updateStructure (freeItem, openItem) s
-   in if null rs
-        then s
-        else getStructure_ (tail rs) (tail ps) structure
+      newStructure = newPair : updateStructure (freeItem, openItem) structure
+   in getStructure_ (tail representation) (tail pairs) newStructure
 
 updateStructure :: (Int, Int) -> Struct -> Struct
 updateStructure (free, open) = map go
   where
-    go pair =
-      if open `elem` pair
-        then free : filter (/= open) pair
-        else pair
+    go pair
+      | open `elem` pair = free : filter (/= open) pair
+      | otherwise = pair
+
+-- addStructures :: (Int, Struct, Struct) -> Struct
+-- addStructures (index, a, b) =
+--   b
