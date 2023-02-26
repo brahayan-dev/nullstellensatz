@@ -1,8 +1,8 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Skeleta (printData) where
+module Skeleta (printData, codify, getStructure, toPosition) where
 
-import Data.List (foldl')
+import Data.List (foldl', sort)
 
 type Code = [Int]
 
@@ -18,6 +18,9 @@ printData =
 
 items :: Int
 items = 2 * 4
+
+toPosition :: Int -> Position
+toPosition = Position
 
 getOddNumbers :: Int -> [Int]
 getOddNumbers n = [1, 3 .. n]
@@ -42,7 +45,7 @@ codify (Position n) =
    in codify_ n products []
 
 codify_ :: Int -> [Int] -> Code -> Code
-codify_ 0 _ representation = 0 : representation
+codify_ _ [] representation = 0 : representation
 codify_ n products representation =
   let k = head products
       x = n `rem` k
@@ -58,7 +61,7 @@ getStructure n =
    in getStructure_ representation pairs []
 
 getStructure_ :: Code -> Struct -> Struct -> Struct
-getStructure_ [] _ structure = structure
+getStructure_ [] _ structure = sort structure
 getStructure_ representation pairs structure =
   let openItem = head representation
       [freeItem, closeItem] = head pairs
@@ -70,7 +73,7 @@ updateStructure :: (Int, Int) -> Struct -> Struct
 updateStructure (free, open) = map go
   where
     go pair
-      | open `elem` pair = free : filter (/= open) pair
+      | open `elem` pair = sort $ free : filter (/= open) pair
       | otherwise = pair
 
 -- addStructures :: (Int, Struct, Struct) -> Struct
