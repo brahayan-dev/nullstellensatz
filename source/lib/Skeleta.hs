@@ -60,7 +60,7 @@ getStructure n = let a = [0, 2 .. (2 * items)]
                  in getStructure_ representation pairs []
 
 getStructure_ :: Code -> Struct -> Struct -> Struct
-getStructure_ [] _ structure = sort structure
+getStructure_ [] _ structure = structure
 getStructure_ representation pairs structure =
   let openItem = head representation
       [freeItem, closeItem] = head pairs
