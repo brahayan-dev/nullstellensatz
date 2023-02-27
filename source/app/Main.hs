@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import Skeleta (printData)
+import           Skeleta (printData)
 
 main :: IO ()
 main = printData

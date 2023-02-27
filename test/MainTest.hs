@@ -1,11 +1,10 @@
 import qualified SkeletaTest as ST
-import Test.Tasty
+import           Test.Tasty
 
 main :: IO ()
-main =
-  defaultMain $
-    testGroup
-      "Tests"
-      [ ST.unitTestsToCodifyIntegersWithinSmallSpaces,
-        ST.unitTestsToGetStructuresWithinSmallSpaces
-      ]
+main = defaultMain
+  $ testGroup
+    "Tests"
+    [ ST.unitTestsToCodifyIntegersWithinSmallSpaces
+    , ST.unitTestsToGetStructuresWithinSmallSpaces
+    , ST.unitTestsToCalculateSearchSpaces]
