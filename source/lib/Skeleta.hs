@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
 module Skeleta
     ( printData
@@ -6,7 +7,8 @@ module Skeleta
     , getIrreducibleSearchSpaceSize
     , codify
     , getStructure
-    , toPosition) where
+    , toPosition
+    , addStructures) where
 
 import           Data.List (foldl', sort)
 
@@ -75,6 +77,7 @@ updateStructure (free, open) = map go
       | open `elem` pair = sort $ free:filter (/= open) pair
       | otherwise = pair
 
+-- TODO: optimize with tail-recursion
 getIrreducibleSearchSpaceSize :: Int -> Int
 getIrreducibleSearchSpaceSize 1 = 1
 getIrreducibleSearchSpaceSize 2 = 1
@@ -83,3 +86,18 @@ getIrreducibleSearchSpaceSize n =
       this = getIrreducibleSearchSpaceSize
       go k = (2 * k - 1) * this k * this (n - k)
   in sum $ map go elements
+
+addStructures :: (Int, Struct, Struct) -> Struct
+addStructures (k, x, y) = map goX x ++ map goY y
+  where
+    sizeX = 2 * length x
+    sizeY = 2 * length y - 1
+    fullSize = sizeX + sizeY + 1
+    goX [a, b]
+      | a > k && b > k = [a + sizeY, b + sizeY]
+      | a > k = sort [a + sizeY, b]
+      | b > k = sort [a, b + sizeY]
+      | otherwise = [a, b]
+    goY [a, b]
+      | b + sizeX == fullSize = sort [a + k, b + sizeX]
+      | otherwise = [a + k, b + k]

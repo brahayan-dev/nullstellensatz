@@ -1,10 +1,12 @@
 module SkeletaTest
-    ( unitTestsToGetStructuresWithinSmallSpaces
-    , unitTestsToCodifyIntegersWithinSmallSpaces
-    , unitTestsToCalculateSearchSpaces) where
+    ( unitTestsToCalculateSearchSpaces
+    , unitTestsToGetStructuresWithinSmallSpaces
+    , unitTestsToAddStructuresWithinSmallSpaces
+    , unitTestsToCodifyIntegersWithinSmallSpaces) where
 
 import           Skeleta (codify, getIrreducibleSearchSpaceSize
-                        , getSearchSpaceSize, getStructure, toPosition)
+                        , getSearchSpaceSize, addStructures, getStructure
+                        , toPosition)
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Data.List (sort)
@@ -52,3 +54,21 @@ unitTestsToGetStructuresWithinSmallSpaces =
          $ assertEqual "==" [[0, 4], [1, 3], [2, 7], [5, 6]] (go 37)
        , testCase "For n = 4, it returns the 104-structure"
          $ assertEqual "==" [[0, 1], [2, 3], [4, 5], [6, 7]] (go 104)]
+
+unitTestsToAddStructuresWithinSmallSpaces :: TestTree
+unitTestsToAddStructuresWithinSmallSpaces =
+  let m1 = [[1, 2]]
+      m2 = [[1, 3], [2, 4]]
+      go = sort . addStructures
+  in testGroup
+       "Skeleta Unit Tests (addStructures)"
+       [ testCase "It applys as f(1, m1, m1)=[[1, 3], [2, 4]]"
+         $ assertEqual "==" [[1, 3], [2, 4]] (go (1, m1, m1))
+       , testCase "It applys as f(1, m1, m2)=[[1, 5], [2, 4], [3, 6]]"
+         $ assertEqual "==" [[1, 5], [2, 4], [3, 6]] (go (1, m1, m2))
+       , testCase "It applys as f(1, m2, m1)=[[1, 4], [2, 6], [3, 5]]"
+         $ assertEqual "==" [[1, 4], [2, 6], [3, 5]] (go (1, m2, m1))
+       , testCase "It applys as f(2, m2, m1)=[[1, 4], [2, 5], [3, 6]]"
+         $ assertEqual "==" [[1, 4], [2, 5], [3, 6]] (go (2, m2, m1))
+       , testCase "It applys as f(3, m2, m1)=[[1, 3], [2, 5], [4, 6]]"
+         $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (3, m2, m1))]
