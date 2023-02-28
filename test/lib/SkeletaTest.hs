@@ -5,8 +5,8 @@ module SkeletaTest
     , unitTestsToCodifyIntegersWithinSmallSpaces) where
 
 import           Skeleta (codify, getIrreducibleSearchSpaceSize
-                        , getSearchSpaceSize, addStructures, getStructure
-                        , toPosition)
+                        , getSearchSpaceSize, addIrreducibleStructures
+                        , getStructure, toPosition)
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Data.List (sort)
@@ -59,9 +59,12 @@ unitTestsToAddStructuresWithinSmallSpaces :: TestTree
 unitTestsToAddStructuresWithinSmallSpaces =
   let m1 = [[1, 2]]
       m2 = [[1, 3], [2, 4]]
-      go = sort . addStructures
+      m3 = [[1, 5], [2, 4], [3, 6]]
+      m4 = [[1, 4], [2, 6], [3, 5]]
+      m5 = [[1, 3], [2, 5], [4, 6]]
+      go = sort . addIrreducibleStructures
   in testGroup
-       "Skeleta Unit Tests (addStructures)"
+       "Skeleta Unit Tests (addIrreducibleStructures)"
        [ testCase "It applys as f(1, m1, m1)=[[1, 3], [2, 4]]"
          $ assertEqual "==" [[1, 3], [2, 4]] (go (1, m1, m1))
        , testCase "It applys as f(1, m1, m2)=[[1, 5], [2, 4], [3, 6]]"
@@ -71,4 +74,21 @@ unitTestsToAddStructuresWithinSmallSpaces =
        , testCase "It applys as f(2, m2, m1)=[[1, 4], [2, 5], [3, 6]]"
          $ assertEqual "==" [[1, 4], [2, 5], [3, 6]] (go (2, m2, m1))
        , testCase "It applys as f(3, m2, m1)=[[1, 3], [2, 5], [4, 6]]"
-         $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (3, m2, m1))]
+         $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (3, m2, m1))
+         -- FIXME: It should return a failure (reducible)
+         -- , testCase "It applys as f(3, m2, m2)=[[1, 7], [2, 8], [3, 5], [4, 6]]"
+         --    $ assertEqual "==" [[1, 7], [2, 8], [3, 5], [4, 6]] (go (2, m2, m2))
+       , testCase "It applys as f(5, m5, m1)=[[1, 3], [2, 5], [4, 7], [6, 8]]"
+         $ assertEqual "==" [[1, 3], [2, 5], [4, 7], [6, 8]] (go (5, m5, m1))
+       , testCase
+           "It applys as f(2, m2, m3)=[[1, 8], [2, 9], [3, 7], [4, 6], [5, 10]]"
+         $ assertEqual
+           "=="
+           [[1, 8], [2, 9], [3, 7], [4, 6], [5, 10]]
+           (go (2, m2, m3))
+       , testCase
+           "It applys as f(1, go (5, m5, m1), m4)=[[1, 8], [2, 5], [3, 14], [4, 6], [7, 10], [9, 12], [11, 13]]"
+         $ assertEqual
+           "=="
+           [[1, 8], [2, 5], [3, 14], [4, 6], [7, 10], [9, 12], [11, 13]]
+           (go (1, go (5, m5, m1), m4))]

@@ -2,13 +2,13 @@
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
 module Skeleta
-    ( printData
-    , getSearchSpaceSize
-    , getIrreducibleSearchSpaceSize
-    , codify
-    , getStructure
+    ( codify
+    , printData
     , toPosition
-    , addStructures) where
+    , getStructure
+    , getSearchSpaceSize
+    , addIrreducibleStructures
+    , getIrreducibleSearchSpaceSize) where
 
 import           Data.List (foldl', sort)
 
@@ -87,17 +87,20 @@ getIrreducibleSearchSpaceSize n =
       go k = (2 * k - 1) * this k * this (n - k)
   in sum $ map go elements
 
-addStructures :: (Int, Struct, Struct) -> Struct
-addStructures (k, x, y) = map goX x ++ map goY y
-  where
-    sizeX = 2 * length x
-    sizeY = 2 * length y - 1
-    fullSize = sizeX + sizeY + 1
-    goX [a, b]
-      | a > k && b > k = [a + sizeY, b + sizeY]
-      | a > k = sort [a + sizeY, b]
-      | b > k = sort [a, b + sizeY]
-      | otherwise = [a, b]
-    goY [a, b]
-      | b + sizeX == fullSize = sort [a + k, b + sizeX]
-      | otherwise = [a + k, b + k]
+addIrreducibleStructures :: (Int, Struct, Struct) -> Struct
+addIrreducibleStructures (_, [], []) = []
+addIrreducibleStructures (_, [], y) = y
+addIrreducibleStructures (_, x, []) = x
+addIrreducibleStructures (k, x, y) =
+  let sizeX = 2 * length x
+      sizeY = 2 * length y - 1
+      fullSize = sizeX + sizeY + 1
+      goX [a, b]
+        | a > k && b > k = [a + sizeY, b + sizeY]
+        | a > k = sort [a + sizeY, b]
+        | b > k = sort [a, b + sizeY]
+        | otherwise = [a, b]
+      goY [a, b]
+        | b + sizeX == fullSize = sort [a + k, b + sizeX]
+        | otherwise = [a + k, b + k]
+  in map goX x ++ map goY y
