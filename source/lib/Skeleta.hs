@@ -7,7 +7,9 @@ module Skeleta
     , toPosition
     , getStructure
     , getSearchSpaceSize
+    , getIrreduciblePacks
     , addIrreducibleStructures
+    , getIrreducibleModelInSpace
     , getIrreducibleSearchSpaceSize) where
 
 import           Data.List (foldl', sort)
@@ -16,11 +18,16 @@ type Code = [Int]
 
 type Struct = [[Int]]
 
+type Arc = (Int, Int)
+
+type Irreducible = (Int, Arc, Arc)
+
 newtype Position = Position Int
 
 printData :: IO ()
 printData = print (codify $ Position 37) >> print (getStructure $ Position 37)
 
+{-- 'n' value related with the space to search --}
 items :: Int
 items = 4
 
@@ -77,16 +84,43 @@ updateStructure (free, open) = map go
       | open `elem` pair = sort $ free:filter (/= open) pair
       | otherwise = pair
 
--- TODO: optimize with tail-recursion
-getIrreducibleSearchSpaceSize :: Int -> Int
-getIrreducibleSearchSpaceSize 1 = 1
-getIrreducibleSearchSpaceSize 2 = 1
-getIrreducibleSearchSpaceSize n =
-  let elements = [1 .. (n - 1)]
-      this = getIrreducibleSearchSpaceSize
-      go k = (2 * k - 1) * this k * this (n - k)
-  in sum $ map go elements
+getIrreduciblePacks :: Int -> [Int]
+getIrreduciblePacks 1 = [1]
+getIrreduciblePacks 2 = [1]
+getIrreduciblePacks n = let elements = [1 .. (n - 1)]
+                            calc = sum . getIrreduciblePacks
+                            go k = (2 * k - 1) * calc k * calc (n - k)
+                        in map go elements
 
+getIrreducibleSearchSpaceSize :: Int -> Int
+getIrreducibleSearchSpaceSize = sum . getIrreduciblePacks
+
+calculatePosition :: [Int] -> Int -> Int
+calculatePosition packs m =
+  let t = tail packs
+      h = head packs
+  in if m < h
+     then m
+     else calculatePosition t (m - h)
+
+getTerm :: [Int] -> (Int, Int) -> Int
+getTerm [] (_, i) = i
+getTerm terms (m, i) =
+  let t = tail terms
+      h = head terms
+  in if m < h
+     then h
+     else getTerm t (m - h, i)
+
+getIrreducibleModelInSpace :: Int -> Position -> Irreducible
+getIrreducibleModelInSpace 2 _ = (0, (1, 0), (1, 0))
+getIrreducibleModelInSpace n (Position m) =
+  let packs = getIrreduciblePacks n
+      i = calculatePosition packs m
+      k = getTerm [1 .. (n - 1)] (m, i)
+  in (i, (k, 0), (n - k, 0))
+
+-- FIXME: What happen when k > 2|x| - 2, if k start at 0?
 addIrreducibleStructures :: (Int, Struct, Struct) -> Struct
 addIrreducibleStructures (_, [], []) = []
 addIrreducibleStructures (_, [], y) = y

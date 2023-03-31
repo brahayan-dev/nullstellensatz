@@ -2,11 +2,13 @@ module SkeletaTest
     ( unitTestsToCalculateSearchSpaces
     , unitTestsToGetStructuresWithinSmallSpaces
     , unitTestsToAddStructuresWithinSmallSpaces
-    , unitTestsToCodifyIntegersWithinSmallSpaces) where
+    , unitTestsToCodifyIntegersWithinSmallSpaces
+    , unitTestsToGetIrreduciblePacksWithinSmallSpaces
+    , unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces) where
 
 import           Skeleta (codify, getIrreducibleSearchSpaceSize
-                        , getSearchSpaceSize, addIrreducibleStructures
-                        , getStructure, toPosition)
+                        , getIrreduciblePacks, getIrreducibleModelInSpace 
+                        , getSearchSpaceSize, addIrreducibleStructures, getStructure, toPosition)
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Data.List (sort)
@@ -55,6 +57,31 @@ unitTestsToGetStructuresWithinSmallSpaces =
        , testCase "For n = 4, it returns the 104-structure"
          $ assertEqual "==" [[0, 1], [2, 3], [4, 5], [6, 7]] (go 104)]
 
+unitTestsToGetIrreduciblePacksWithinSmallSpaces :: TestTree
+unitTestsToGetIrreduciblePacksWithinSmallSpaces = testGroup
+  "Skeleta Unit Tests (getIrreduciblePacks)"
+  [ testCase "For n = 3, it returns [1, 3]"
+    $ assertEqual "==" [1, 3] (getIrreduciblePacks 3)
+  , testCase "For n = 4, it returns [4, 3, 20]"
+    $ assertEqual "==" [4, 3, 20] (getIrreduciblePacks 4)
+  , testCase "For n = 5, it returns [27, 12, 20, 189]"
+    $ assertEqual "==" [27, 12, 20, 189] (getIrreduciblePacks 5)]
+
+unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces :: TestTree
+unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces =
+  let go n = getIrreducibleModelInSpace 3 $ toPosition n
+  in testGroup
+       "Skeleta Unit Tests (getIrreducibleModelInSpace)"
+       [ testCase "For n = 3, it returns the 0-irreducible-structure"
+         $ assertEqual "==" (0, (1, 0), (2, 0)) (go 0)
+       , testCase "For n = 3, it returns the 1-irreducible-structure"
+         $ assertEqual "==" (0, (2, 0), (1, 0)) (go 1)
+       , testCase "For n = 3, it returns the 2-irreducible-structure"
+         $ assertEqual "==" (1, (2, 0), (1, 0)) (go 2)
+       , testCase "For n = 3, it returns the 3-irreducible-structure"
+         $ assertEqual "==" (2, (2, 0), (1, 0)) (go 3)]
+
+-- FIXME: Change to start with 0!
 unitTestsToAddStructuresWithinSmallSpaces :: TestTree
 unitTestsToAddStructuresWithinSmallSpaces =
   let m1 = [[1, 2]]
@@ -77,7 +104,7 @@ unitTestsToAddStructuresWithinSmallSpaces =
          $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (3, m2, m1))
        , testCase "It applys as f(5, m5, m1)=[[1, 3], [2, 5], [4, 7], [6, 8]]"
          $ assertEqual "==" [[1, 3], [2, 5], [4, 7], [6, 8]] (go (5, m5, m1))
-         -- FIXME: It should return a failure (reducible)
+         -- FIXME: It should return a failure (it's a reducible, instead of irreducible)
          -- , testCase "It applys as f(3, m2, m2)=[[1, 7], [2, 8], [3, 5], [4, 6]]"
          --    $ assertEqual "==" [[1, 7], [2, 8], [3, 5], [4, 6]] (go (2, m2, m2))
        , testCase

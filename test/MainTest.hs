@@ -8,4 +8,6 @@ main = defaultMain
     [ ST.unitTestsToCalculateSearchSpaces
     , ST.unitTestsToGetStructuresWithinSmallSpaces
     , ST.unitTestsToAddStructuresWithinSmallSpaces
-    , ST.unitTestsToCodifyIntegersWithinSmallSpaces]
+    , ST.unitTestsToCodifyIntegersWithinSmallSpaces
+    , ST.unitTestsToGetIrreduciblePacksWithinSmallSpaces
+    , ST.unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces]
