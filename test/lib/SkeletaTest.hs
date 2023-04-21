@@ -7,8 +7,9 @@ module SkeletaTest
     , unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces) where
 
 import           Skeleta (codify, getIrreducibleSearchSpaceSize
-                        , getIrreduciblePacks, getIrreducibleModelInSpace 
-                        , getSearchSpaceSize, addIrreducibleStructures, getStructure, toPosition)
+                        , getIrreduciblePacks, getIrreducibleModelInSpace
+                        , getSearchSpaceSize, addIrreducibleStructures
+                        , getStructure, toPosition, totalValue)
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Data.List (sort)
@@ -22,6 +23,8 @@ unitTestsToCalculateSearchSpaces = testGroup
     $ assertEqual "==" 27 (getIrreducibleSearchSpaceSize 4)
   , testCase "For n = 3, it returns 4 irreducible matchings"
     $ assertEqual "==" 4 (getIrreducibleSearchSpaceSize 3)
+  , testCase "For n = 6, it returns 2830 irreducible matchings"
+    $ assertEqual "==" 2830 (getIrreducibleSearchSpaceSize 6)
   , testCase "For n = 2, it returns 1 irreducible matching"
     $ assertEqual "==" 1 (getIrreducibleSearchSpaceSize 2)
   , testCase "For n = 4, it returns 105 complete matchings"
@@ -58,28 +61,44 @@ unitTestsToGetStructuresWithinSmallSpaces =
          $ assertEqual "==" [[0, 1], [2, 3], [4, 5], [6, 7]] (go 104)]
 
 unitTestsToGetIrreduciblePacksWithinSmallSpaces :: TestTree
-unitTestsToGetIrreduciblePacksWithinSmallSpaces = testGroup
-  "Skeleta Unit Tests (getIrreduciblePacks)"
-  [ testCase "For n = 3, it returns [1, 3]"
-    $ assertEqual "==" [1, 3] (getIrreduciblePacks 3)
-  , testCase "For n = 4, it returns [4, 3, 20]"
-    $ assertEqual "==" [4, 3, 20] (getIrreduciblePacks 4)
-  , testCase "For n = 5, it returns [27, 12, 20, 189]"
-    $ assertEqual "==" [27, 12, 20, 189] (getIrreduciblePacks 5)]
+unitTestsToGetIrreduciblePacksWithinSmallSpaces =
+  let go k = map totalValue $ getIrreduciblePacks k
+  in testGroup
+       "Skeleta Unit Tests (getIrreduciblePacks)"
+       [ testCase "For n = 3, it returns [1, 3]"
+         $ assertEqual "==" [1, 3] (go 3)
+       , testCase "For n = 4, it returns [4, 3, 20]"
+         $ assertEqual "==" [4, 3, 20] (go 4)
+       , testCase "For n = 5, it returns [27, 12, 20, 189]"
+         $ assertEqual "==" [27, 12, 20, 189] (go 5)
+       , testCase "For n = 6, it returns [248, 81, 80, 189, 2232]"
+         $ assertEqual "==" [248, 81, 80, 189, 2232] (go 6)
+       , testCase "For n = 7, it returns [2830, 744, 540, 756, 2232, 31130]"
+         $ assertEqual "==" [2830, 744, 540, 756, 2232, 31130] (go 7)]
 
 unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces :: TestTree
 unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces =
-  let go n = getIrreducibleModelInSpace 3 $ toPosition n
+  let go n p = getIrreducibleModelInSpace n $ toPosition p
+      go3 = go 3
+      go5 = go 5
+      go6 = go 6
+      go7 = go 7
   in testGroup
        "Skeleta Unit Tests (getIrreducibleModelInSpace)"
        [ testCase "For n = 3, it returns the 0-irreducible-structure"
-         $ assertEqual "==" (0, (1, 0), (2, 0)) (go 0)
+         $ assertEqual "==" (0, (1, 0), (2, 0)) (go3 0)
        , testCase "For n = 3, it returns the 1-irreducible-structure"
-         $ assertEqual "==" (0, (2, 0), (1, 0)) (go 1)
+         $ assertEqual "==" (0, (2, 0), (1, 0)) (go3 1)
        , testCase "For n = 3, it returns the 2-irreducible-structure"
-         $ assertEqual "==" (1, (2, 0), (1, 0)) (go 2)
+         $ assertEqual "==" (1, (2, 0), (1, 0)) (go3 2)
        , testCase "For n = 3, it returns the 3-irreducible-structure"
-         $ assertEqual "==" (2, (2, 0), (1, 0)) (go 3)]
+         $ assertEqual "==" (2, (2, 0), (1, 0)) (go3 3)
+       , testCase "For n = 5, it returns the 40-irreducible-structure"
+         $ assertEqual "==" (0, (3, 1), (2, 0)) (go5 40)
+       , testCase "For n = 6, it returns the 383-irreducible-structure"
+         $ assertEqual "==" (3, (3, 1), (3, 2)) (go6 383)
+       , testCase "For n = 7, it returns the 3972-irreducible-structure"
+         $ assertEqual "==" (3, (3, 2), (4, 20)) (go7 3972)]
 
 -- FIXME: Change to start with 0!
 unitTestsToAddStructuresWithinSmallSpaces :: TestTree

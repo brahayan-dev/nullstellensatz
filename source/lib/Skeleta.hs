@@ -4,6 +4,7 @@
 module Skeleta
     ( codify
     , printData
+    , totalValue
     , toPosition
     , getStructure
     , getSearchSpaceSize
@@ -18,9 +19,13 @@ type Code = [Int]
 
 type Struct = [[Int]]
 
-type Arc = (Int, Int)
+type IrreducibleCode = (Int, (Int, Int), (Int, Int))
 
-type Irreducible = (Int, Arc, Arc)
+data Pack = Pack { kValue :: Int
+                 , totalValue :: Int
+                 , firstSValue :: Int
+                 , secondSValue :: Int
+                 }
 
 newtype Position = Position Int
 
@@ -84,41 +89,53 @@ updateStructure (free, open) = map go
       | open `elem` pair = sort $ free:filter (/= open) pair
       | otherwise = pair
 
-getIrreduciblePacks :: Int -> [Int]
-getIrreduciblePacks 1 = [1]
-getIrreduciblePacks 2 = [1]
-getIrreduciblePacks n = let elements = [1 .. (n - 1)]
-                            calc = sum . getIrreduciblePacks
-                            go k = (2 * k - 1) * calc k * calc (n - k)
-                        in map go elements
+toPack :: (Int -> Int) -> Int -> Int -> Pack
+toPack calc n k =
+  let sk = calc k
+      snk = calc (n - k)
+  in Pack { kValue = k
+          , firstSValue = sk
+          , secondSValue = snk
+          , totalValue = (2 * k - 1) * sk * snk
+          }
+
+-- TODO: use dynamic programming here!
+getIrreduciblePacks :: Int -> [Pack]
+getIrreduciblePacks
+  1 = [Pack { kValue = 1, totalValue = 1, firstSValue = 1, secondSValue = 1 }]
+getIrreduciblePacks
+  2 = [Pack { kValue = 1, totalValue = 1, firstSValue = 1, secondSValue = 1 }]
+getIrreduciblePacks n =
+  let elements = [1 .. (n - 1)]
+      calc k = sum $ map totalValue $ getIrreduciblePacks k
+  in map (toPack calc n) elements
 
 getIrreducibleSearchSpaceSize :: Int -> Int
-getIrreducibleSearchSpaceSize = sum . getIrreduciblePacks
+getIrreducibleSearchSpaceSize k = sum $ map totalValue $ getIrreduciblePacks k
 
-calculatePosition :: [Int] -> Int -> Int
-calculatePosition packs m =
-  let t = tail packs
-      h = head packs
-  in if m < h
-     then m
-     else calculatePosition t (m - h)
+selectPack :: [Pack] -> Int -> (Int, Pack)
+selectPack packs m = let t = tail packs
+                         h = head packs
+                     in if m < totalValue h
+                        then (m, h)
+                        else selectPack t (m - totalValue h)
 
-getTerm :: [Int] -> (Int, Int) -> Int
-getTerm [] (_, i) = i
-getTerm terms (m, i) =
-  let t = tail terms
-      h = head terms
-  in if m < h
-     then h
-     else getTerm t (m - h, i)
+findPositions :: (Int, Int, Int) -> (Int, Int, Int)
+findPositions (x, sk, snk) =
+  let j = x `quot` (sk * snk)
+      r = x `rem` (sk * snk)
+      a = r `quot` snk
+      b = r `rem` snk
+  in (j, a, b)
 
-getIrreducibleModelInSpace :: Int -> Position -> Irreducible
+getIrreducibleModelInSpace :: Int -> Position -> IrreducibleCode
 getIrreducibleModelInSpace 2 _ = (0, (1, 0), (1, 0))
 getIrreducibleModelInSpace n (Position m) =
   let packs = getIrreduciblePacks n
-      i = calculatePosition packs m
-      k = getTerm [1 .. (n - 1)] (m, i)
-  in (i, (k, 0), (n - k, 0))
+      (x, pack) = selectPack packs m
+      (j, a, b) = findPositions (x, firstSValue pack, secondSValue pack)
+      k = kValue pack
+  in (j, (k, a), (n - k, b))
 
 -- FIXME: What happen when k > 2|x| - 2, if k start at 0?
 addIrreducibleStructures :: (Int, Struct, Struct) -> Struct
