@@ -146,6 +146,9 @@ getIrreducibleCodeToStruct (j, (k, a), (p, b)) = addIrreducibleStructures
   , getIrreducibleCodeToStruct $ getIrreducibleModelInSpace k $ toPosition a
   , getIrreducibleCodeToStruct $ getIrreducibleModelInSpace p $ toPosition b)
 
+getStructFromIndex :: Int -> Position -> Struct
+getStructFromIndex n m = getIrreducibleCodeToStruct $ getIrreducibleModelInSpace n m
+
 -- FIXME: What happen when k > 2|x| - 2?
 addIrreducibleStructures :: (Int, Struct, Struct) -> Struct
 addIrreducibleStructures (_, [], []) = []

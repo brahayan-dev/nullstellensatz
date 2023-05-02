@@ -132,7 +132,7 @@ unitTestsToAddStructuresWithinSmallSpaces =
          $ assertEqual "==" [[1, 5], [2, 4], [3, 6]] (go (0, m1, m2))
        , testCase "It applys as f(1, m2, m1)=[[1, 4], [2, 6], [3, 5]]"
          $ assertEqual "==" [[1, 4], [2, 6], [3, 5]] (go (0, m2, m1))
-       , testCase "It applys as f(2, m2, m1)=[[1, 4], [2, 5], [3, 6]]"
+       , testCase "It applys as f(1, m2, m1)=[[1, 4], [2, 5], [3, 6]]"
          $ assertEqual "==" [[1, 4], [2, 5], [3, 6]] (go (1, m2, m1))
        , testCase "It applys as f(3, m2, m1)=[[1, 3], [2, 5], [4, 6]]"
          $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (2, m2, m1))

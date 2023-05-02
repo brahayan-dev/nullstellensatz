@@ -5,8 +5,8 @@ main :: IO ()
 main = defaultMain
   $ testGroup
     "Tests"
-    [ ST.unitTestsToGetIrreducibleCodeToStruct
-    , ST.unitTestsToCalculateSearchSpaces
+    [ ST.unitTestsToCalculateSearchSpaces
+    , ST.unitTestsToGetIrreducibleCodeToStruct
     , ST.unitTestsToGetStructuresWithinSmallSpaces
     , ST.unitTestsToAddStructuresWithinSmallSpaces
     , ST.unitTestsToCodifyIntegersWithinSmallSpaces
