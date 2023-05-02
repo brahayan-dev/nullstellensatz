@@ -11,6 +11,7 @@ module Skeleta
     , getIrreduciblePacks
     , addIrreducibleStructures
     , getIrreducibleModelInSpace
+    , getIrreducibleCodeToStruct
     , getIrreducibleSearchSpaceSize) where
 
 import           Data.List (foldl', sort)
@@ -129,6 +130,7 @@ findPositions (x, sk, snk) =
   in (j, a, b)
 
 getIrreducibleModelInSpace :: Int -> Position -> IrreducibleCode
+getIrreducibleModelInSpace 1 _ = (0, (0, 0), (0, 0)) -- Convention: (1, 0)
 getIrreducibleModelInSpace 2 _ = (0, (1, 0), (1, 0))
 getIrreducibleModelInSpace n (Position m) =
   let packs = getIrreduciblePacks n
@@ -137,13 +139,21 @@ getIrreducibleModelInSpace n (Position m) =
       k = kValue pack
   in (j, (k, a), (n - k, b))
 
--- FIXME: What happen when k > 2|x| - 2, if k start at 0?
+getIrreducibleCodeToStruct :: IrreducibleCode -> Struct
+getIrreducibleCodeToStruct (0, (0, 0), (0, 0)) = [[1, 2]]
+getIrreducibleCodeToStruct (j, (k, a), (p, b)) = addIrreducibleStructures
+  ( j
+  , getIrreducibleCodeToStruct $ getIrreducibleModelInSpace k $ toPosition a
+  , getIrreducibleCodeToStruct $ getIrreducibleModelInSpace p $ toPosition b)
+
+-- FIXME: What happen when k > 2|x| - 2?
 addIrreducibleStructures :: (Int, Struct, Struct) -> Struct
 addIrreducibleStructures (_, [], []) = []
 addIrreducibleStructures (_, [], y) = y
 addIrreducibleStructures (_, x, []) = x
-addIrreducibleStructures (k, x, y) =
-  let sizeX = 2 * length x
+addIrreducibleStructures (k_, x, y) =
+  let k = succ k_
+      sizeX = 2 * length x
       sizeY = 2 * length y - 1
       fullSize = sizeX + sizeY + 1
       goX [a, b]

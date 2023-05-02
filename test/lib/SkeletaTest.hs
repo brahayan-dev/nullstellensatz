@@ -1,5 +1,6 @@
 module SkeletaTest
     ( unitTestsToCalculateSearchSpaces
+    , unitTestsToGetIrreducibleCodeToStruct
     , unitTestsToGetStructuresWithinSmallSpaces
     , unitTestsToAddStructuresWithinSmallSpaces
     , unitTestsToCodifyIntegersWithinSmallSpaces
@@ -7,9 +8,10 @@ module SkeletaTest
     , unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces) where
 
 import           Skeleta (codify, getIrreducibleSearchSpaceSize
-                        , getIrreduciblePacks, getIrreducibleModelInSpace
-                        , getSearchSpaceSize, addIrreducibleStructures
-                        , getStructure, toPosition, totalValue)
+                        , getIrreducibleCodeToStruct, getIrreduciblePacks
+                        , getIrreducibleModelInSpace, getSearchSpaceSize
+                        , addIrreducibleStructures, getStructure, toPosition
+                        , totalValue)
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Data.List (sort)
@@ -100,7 +102,20 @@ unitTestsToGetIrreducibleModelInSpaceWithinSmallSpaces =
        , testCase "For n = 7, it returns the 3972-irreducible-structure"
          $ assertEqual "==" (3, (3, 2), (4, 20)) (go7 3972)]
 
--- FIXME: Change to start with 0!
+unitTestsToGetIrreducibleCodeToStruct :: TestTree
+unitTestsToGetIrreducibleCodeToStruct = testGroup
+  "Skeleta Unit Tests (getIrreducibleCodeToStruct)"
+  [ testCase "It returns [[1, 2]] given (0, (0, 0), (0, 0))"
+    $ assertEqual
+      "=="
+      [[1, 2]]
+      (getIrreducibleCodeToStruct (0, (0, 0), (0, 0)))
+  , testCase "It returns [[1, 3], [2, 4]] given (0, (1, 0), (1, 0))"
+    $ assertEqual
+      "=="
+      [[1, 3], [2, 4]]
+      (getIrreducibleCodeToStruct (0, (1, 0), (1, 0)))]
+
 unitTestsToAddStructuresWithinSmallSpaces :: TestTree
 unitTestsToAddStructuresWithinSmallSpaces =
   let m1 = [[1, 2]]
@@ -112,18 +127,18 @@ unitTestsToAddStructuresWithinSmallSpaces =
   in testGroup
        "Skeleta Unit Tests (addIrreducibleStructures)"
        [ testCase "It applys as f(1, m1, m1)=[[1, 3], [2, 4]]"
-         $ assertEqual "==" [[1, 3], [2, 4]] (go (1, m1, m1))
+         $ assertEqual "==" [[1, 3], [2, 4]] (go (0, m1, m1))
        , testCase "It applys as f(1, m1, m2)=[[1, 5], [2, 4], [3, 6]]"
-         $ assertEqual "==" [[1, 5], [2, 4], [3, 6]] (go (1, m1, m2))
+         $ assertEqual "==" [[1, 5], [2, 4], [3, 6]] (go (0, m1, m2))
        , testCase "It applys as f(1, m2, m1)=[[1, 4], [2, 6], [3, 5]]"
-         $ assertEqual "==" [[1, 4], [2, 6], [3, 5]] (go (1, m2, m1))
+         $ assertEqual "==" [[1, 4], [2, 6], [3, 5]] (go (0, m2, m1))
        , testCase "It applys as f(2, m2, m1)=[[1, 4], [2, 5], [3, 6]]"
-         $ assertEqual "==" [[1, 4], [2, 5], [3, 6]] (go (2, m2, m1))
+         $ assertEqual "==" [[1, 4], [2, 5], [3, 6]] (go (1, m2, m1))
        , testCase "It applys as f(3, m2, m1)=[[1, 3], [2, 5], [4, 6]]"
-         $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (3, m2, m1))
+         $ assertEqual "==" [[1, 3], [2, 5], [4, 6]] (go (2, m2, m1))
        , testCase "It applys as f(5, m5, m1)=[[1, 3], [2, 5], [4, 7], [6, 8]]"
-         $ assertEqual "==" [[1, 3], [2, 5], [4, 7], [6, 8]] (go (5, m5, m1))
-         -- FIXME: It should return a failure (it's a reducible, instead of irreducible)
+         $ assertEqual "==" [[1, 3], [2, 5], [4, 7], [6, 8]] (go (4, m5, m1))
+         -- FIXME: It should return a failure (it's a reducible, instead of a irreducible)
          -- , testCase "It applys as f(3, m2, m2)=[[1, 7], [2, 8], [3, 5], [4, 6]]"
          --    $ assertEqual "==" [[1, 7], [2, 8], [3, 5], [4, 6]] (go (2, m2, m2))
        , testCase
@@ -131,10 +146,10 @@ unitTestsToAddStructuresWithinSmallSpaces =
          $ assertEqual
            "=="
            [[1, 8], [2, 9], [3, 7], [4, 6], [5, 10]]
-           (go (2, m2, m3))
+           (go (1, m2, m3))
        , testCase
            "It applys as f(1, go (5, m5, m1), m4)=[[1, 8], [2, 5], [3, 14], [4, 6], [7, 10], [9, 12], [11, 13]]"
          $ assertEqual
            "=="
            [[1, 8], [2, 5], [3, 14], [4, 6], [7, 10], [9, 12], [11, 13]]
-           (go (1, go (5, m5, m1), m4))]
+           (go (0, go (4, m5, m1), m4))]
