@@ -1,0 +1,7 @@
+{:molecules 4
+ :id "ndb_00075"
+ :primary "CGCGCGCGCGCG"
+ :secondary "(())[[((]]))"
+ :origin "RNA SSTRAND database"
+ :external-source "Nucleic Acid Database zdfs33"
+ :observation "The secondary structure annotation was obtained with RNAview"}

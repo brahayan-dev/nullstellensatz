@@ -1,0 +1,7 @@
+{:molecules 2
+ :id "pdb_00940"
+ :primary "GUCUAAGACAAG"
+ :secondary "(((...)))..."
+ :origin "RNA SSTRAND database"
+ :external-source "RCSB Protein Data Bank 2B2D"
+ :observation "The secondary structure annotation was obtained with RNAview"}

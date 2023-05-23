@@ -1,0 +1,13 @@
+{:tasks
+ {:requires ([babashka.fs :as fs])
+  :init (def file-name "nullstellensatz")
+  build (do
+          (shell "lein uberjar")
+          (when (fs/exists? file-name)
+            (fs/delete file-name))
+          (let [paths (fs/glob "./target/uberjar" "*-standalone.jar")
+                ->native (str "native-image -jar "
+                              (first paths)
+                              " --no-fallback --no-server "
+                              file-name)]
+            (shell ->native)))}}
