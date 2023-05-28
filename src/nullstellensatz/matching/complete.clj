@@ -5,7 +5,7 @@
 
 (defn- multiply-values [odd-numbers]
   (letfn [(->values [[k :as acc] n]
-            (-> k nil? (if 1 k) (* n) (cons acc)))]
+            (-> k nil? (if 1 k) (*' n) (cons acc)))]
     (reduce ->values [] odd-numbers)))
 
 (defn- generate-code [p products representation]
@@ -24,18 +24,19 @@
                    (cons free)) pair))]
     (map (comp set ->new-structure) structure)))
 
-
 (defn- generate-structure [representation pairs structure]
   (cond
     (empty? representation) structure
     :else (let [open-item (first representation)
                 [free-item close-item] (first pairs)
                 new-pair (set [open-item close-item])
-                new-structure (cons new-pair (update-structure [free-item open-item] structure))]
+                new-structure (->> structure
+                                   (update-structure [free-item open-item])
+                                   (cons new-pair))]
             (recur (rest representation) (rest pairs) new-structure))))
 
 (defn ->size [n]
-  (reduce * 1 (generate-odd-numbers n)))
+  (reduce *' 1 (generate-odd-numbers n)))
 
 (defn ->code [nucleotids position]
   (let [products (-> nucleotids
@@ -45,7 +46,7 @@
 (defn ->structure [nucleotids position]
   (let [a (range 0 nucleotids 2)
         b (range 1 nucleotids 2)
-        representation (->code nucleotids position)
-        pairs (map vector a b)]
+        pairs (map vector a b)
+        representation (->code nucleotids position)]
     ((comp set generate-structure) representation pairs [])))
 
