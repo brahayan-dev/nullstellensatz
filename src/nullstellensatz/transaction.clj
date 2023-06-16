@@ -1,4 +1,10 @@
-(ns nullstellensatz.transaction)
+(ns nullstellensatz.transaction
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]))
+
+(defn read-molecule [file]
+  (with-open [stream (io/reader (str "data/" file ".edn"))]
+    (-> stream java.io.PushbackReader. edn/read)))
 
 ;; (defn- path->edn [path]
 ;;   (letfn [(->edn [x] (json/parse-string x true))
