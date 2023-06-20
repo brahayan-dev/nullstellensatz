@@ -2,9 +2,19 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 
-(defn read-molecule [file]
-  (with-open [stream (io/reader (str "data/" file ".edn"))]
-    (-> stream java.io.PushbackReader. edn/read)))
+(defn- ->file [name]
+  (io/file "data" (str name ".edn")))
+
+(defn molecule-exists? [name]
+  (-> name ->file .exists))
+
+(defn print-errors [{:keys [errors] :as input}]
+  (when-not (empty? errors)
+   (-> errors first println)) input)
+
+(defn read-data [{:keys [options errors]}]
+  (when (empty? errors)
+   (-> options :molecule ->file io/reader java.io.PushbackReader. edn/read)))
 
 ;; (defn- path->edn [path]
 ;;   (letfn [(->edn [x] (json/parse-string x true))
