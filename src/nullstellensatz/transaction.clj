@@ -1,6 +1,9 @@
 (ns nullstellensatz.transaction
   (:require [clojure.edn :as edn]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.string :refer [split join]]
+            [nullstellensatz.matching.complete :as complete]
+            [nullstellensatz.matching.irreducible :as irreducible]))
 
 (defn- ->file [name]
   (io/file "data" (str name ".edn")))
@@ -10,44 +13,57 @@
 
 (defn print-errors [{:keys [errors] :as input}]
   (when-not (empty? errors)
-   (-> errors first println)) input)
+    (-> errors first println)) input)
 
-(defn read-data [{:keys [options errors]}]
+(defn load-data [{:keys [options errors] :as input}]
+  (if (empty? errors)
+    (let [data (-> options
+                   :molecule
+                   ->file io/reader
+                   java.io.PushbackReader. edn/read)]
+      (assoc input :data data)) input))
+
+(defn count-elements [{:keys [data errors] :as input}]
+  (if (empty? errors)
+    (let [raw (-> data :secondary (split #""))
+          ->predicate (fn [x] #(= x %))
+          ->quantity-of #(-> % ->predicate (filter raw) count)]
+      (assoc-in input [:data :elements] {:free-points (->quantity-of ".")
+                                         :matching-arcs (->quantity-of "(")
+                                         :crossing-arcs (->quantity-of "[")})) input))
+
+(defn add-matching-size [{:keys [data errors] :as input}]
+  (if (empty? errors)
+    (letfn [(->value [{:keys [matching-arcs crossing-arcs]}]
+              (if (= 0 crossing-arcs) matching-arcs (inc matching-arcs)))]
+      (assoc-in input [:data :matching-size] (-> data :elements ->value))) input))
+
+(defn add-search-space-size [{:keys [data options errors] :as input}]
+  (if (empty? errors)
+    (let [n (:matching-size data)
+          size (if (:irreducible options)
+                 (irreducible/->size n)
+                 (complete/->size (* 2 n)))]
+      (assoc-in input [:data :search-space-size] size)) input))
+
+(defn validate-structure-position [{:keys [data options errors] :as input}]
+  (if (empty? errors)
+    (let [structure (:structure options)
+          space-size (:search-space-size data)
+          error-msg (str "Failed to validate \"-s " structure
+                         "\": A structure must be between 0 and " space-size)]
+      (if (> structure space-size)
+        (assoc input :errors [error-msg]) input)) input))
+
+(defn- format-matching [answer]
+  (letfn [(->format [pair] (join "," pair))]
+   (->> answer (map ->format) (join "|") println)))
+
+(defn print-answer [{:keys [errors options data]}]
   (when (empty? errors)
-   (-> options :molecule ->file io/reader java.io.PushbackReader. edn/read)))
-
-;; (defn- path->edn [path]
-;;   (letfn [(->edn [x] (json/parse-string x true))
-;;           (convert [x] (map ->edn x))]
-;;     (-> path io/reader line-seq convert)))
-
-;; (defn- add-multiline-tag [{:keys [input] :as m}]
-;;   (assoc m :multiline? (-> input count (> 1))))
-
-;; (defn- ->execute-tax-calc [{:keys [input multiline?]}]
-;;   (if multiline?
-;;     (map domain/calculate-taxes input)
-;;     (domain/calculate-taxes input)))
-
-;; (defn compact [{:keys [multiline?] :as m} k]
-;;   (letfn [(->flat [v multiline?]
-;;             (if multiline? v (flatten v)))]
-;;     (update m k ->flat multiline?)))
-
-;; (defn schematize [data]
-;;   (letfn [(->schema [[in out]]
-;;             {:input (path->edn in)
-;;              :output (path->edn out)})]
-;;     (map (comp add-multiline-tag ->schema) data)))
-
-;; (defn print-answer [items]
-;;   (let [has-maps? (-> items first map?)
-;;         ->print (comp println json/generate-string)]
-;;     (if has-maps?
-;;       (->print items)
-;;       (doseq [i items] (->print i)))))
-
-;; (defn transform [x]
-;;   (let [data {:input x}
-;;         ->compact #(compact % :input)]
-;;     (-> data add-multiline-tag ->compact ->execute-tax-calc)))
+    (let [n (:matching-size data)
+          structure (:structure options)]
+      (format-matching
+       (if-not (:irreducible options)
+                 (complete/->structure (* 2 n) structure)
+                 ((comp irreducible/->structure irreducible/->code) n structure))))))

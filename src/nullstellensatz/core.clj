@@ -1,6 +1,5 @@
 (ns nullstellensatz.core
   (:require
-   [clojure.pprint :refer [pprint]]
    [clojure.tools.cli :refer [parse-opts]]
    [nullstellensatz.transaction :as transaction])
   (:gen-class))
@@ -10,8 +9,8 @@
     :validate [transaction/molecule-exists? "Must be a molecule created within /data"]]
    ["-s" "--structure STRUCTURE" "Structure number ID to create"
     :default 0
-    :parse-fn #(Integer/parseInt %)
-    :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
+    :parse-fn #(Long/parseLong %)
+    :validate [#(< 0 %) "Must be a number between 0 and 9223372036854775807"]]
    ["-i" "--irreducible"]
    ["-h" "--help"]])
 
@@ -20,5 +19,10 @@
 
 (defn -main [& args]
   (-> args ->input
-      transaction/print-errors 
-      transaction/read-data pprint))
+      transaction/load-data
+      transaction/count-elements
+      transaction/add-matching-size
+      transaction/add-search-space-size
+      transaction/validate-structure-position
+      transaction/print-errors
+      transaction/print-answer))
