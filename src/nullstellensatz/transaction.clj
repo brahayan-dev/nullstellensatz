@@ -30,7 +30,9 @@
           ->quantity-of #(-> % ->predicate (filter raw) count)]
       (assoc-in input [:data :elements] {:free-points (->quantity-of ".")
                                          :matching-arcs (->quantity-of "(")
-                                         :crossing-arcs (->quantity-of "[")})) input))
+                                         :crossing-arcs (+
+                                                         (->quantity-of "{")
+                                                         (->quantity-of "["))})) input))
 
 (defn add-matching-size [{:keys [data errors] :as input}]
   (if (empty? errors)
@@ -57,7 +59,7 @@
 
 (defn- format-matching [answer]
   (letfn [(->format [pair] (join "," pair))]
-   (->> answer (map ->format) (join "|") println)))
+    (->> answer (map ->format) (join "|") println)))
 
 (defn print-answer [{:keys [errors options data]}]
   (when (empty? errors)
@@ -65,5 +67,5 @@
           structure (:structure options)]
       (format-matching
        (if-not (:irreducible options)
-                 (complete/->structure (* 2 n) structure)
-                 ((comp irreducible/->structure irreducible/->code) n structure))))))
+         (complete/->structure (* 2 n) structure)
+         ((comp irreducible/->structure irreducible/->code) n structure))))))
