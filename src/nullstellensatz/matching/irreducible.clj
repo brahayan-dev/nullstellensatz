@@ -40,17 +40,17 @@
         size-x (* 2 (count x))
         size-y (dec (* 2 (count y)))
         full-size (+ size-x size-y 1)
-        ->x (fn [[a b]]
-              (cond
-                (> a k b k) [(+ a size-y) (+ b size-y)]
-                (> a k) (sort [(+ a size-y) b])
-                (> b k) (sort [a (+ b size-y)])
-                :else [a b]))
-        ->y (fn [[a b]]
-              (cond
-                (= (+ b size-x) full-size) (sort [(+ a k) (+ b size-x)])
-                :else [(+ a k) (+ b k)]))]
-    (concat (map ->x x) (map ->y y))))
+        ->first-part (fn [[a b]]
+                       (cond
+                         (and (> a k) (> b k)) [(+ a size-y) (+ b size-y)]
+                         (> a k) [(+ a size-y) b]
+                         (> b k) [a (+ b size-y)]
+                         :else [a b]))
+        ->second-part (fn [[a b]]
+                        (cond
+                          (= (+ b size-x) full-size) [(+ a k) (+ b size-x)]
+                          :else [(+ a k) (+ b k)]))]
+    (concat (map ->first-part x) (map ->second-part y))))
 
 (defn ->code [n m]
   (cond
