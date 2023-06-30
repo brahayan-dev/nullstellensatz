@@ -8,14 +8,11 @@
 (defn- ->file [name]
   (io/file "data" (str name ".edn")))
 
-(defn molecule-exists? [name]
-  (-> name ->file .exists))
-
-(defn print-errors [{:keys [errors] :as input}]
+(defn- print-errors [{:keys [errors] :as input}]
   (when-not (empty? errors)
     (-> errors first println)) input)
 
-(defn load-data [{:keys [options errors] :as input}]
+(defn- load-data [{:keys [options errors] :as input}]
   (if (empty? errors)
     (let [data (-> options
                    :molecule
@@ -23,7 +20,7 @@
                    java.io.PushbackReader. edn/read)]
       (assoc input :data data)) input))
 
-(defn count-elements [{:keys [data errors] :as input}]
+(defn- count-elements [{:keys [data errors] :as input}]
   (if (empty? errors)
     (let [raw (-> data :secondary (split #""))
           ->predicate (fn [x] #(= x %))
@@ -34,13 +31,13 @@
                                                          (->quantity-of "{")
                                                          (->quantity-of "["))})) input))
 
-(defn add-matching-size [{:keys [data errors] :as input}]
+(defn- add-matching-size [{:keys [data errors] :as input}]
   (if (empty? errors)
     (letfn [(->value [{:keys [matching-arcs crossing-arcs]}]
               (if (= 0 crossing-arcs) matching-arcs (inc matching-arcs)))]
       (assoc-in input [:data :matching-size] (-> data :elements ->value))) input))
 
-(defn add-search-space-size [{:keys [data options errors] :as input}]
+(defn- add-search-space-size [{:keys [data options errors] :as input}]
   (if (empty? errors)
     (let [n (:matching-size data)
           size (if (:irreducible options)
@@ -48,7 +45,7 @@
                  (complete/->size (* 2 n)))]
       (assoc-in input [:data :search-space-size] size)) input))
 
-(defn validate-structure-position [{:keys [data options errors] :as input}]
+(defn- validate-structure-position [{:keys [data options errors] :as input}]
   (if (empty? errors)
     (let [structure (:structure options)
           space-size (:search-space-size data)
@@ -61,7 +58,7 @@
   (letfn [(->format [pair] (join "," pair))]
     (->> answer (map ->format) (join "|") println)))
 
-(defn print-answer [{:keys [errors options data]}]
+(defn- print-answer [{:keys [errors options data]}]
   (when (empty? errors)
     (let [n (:matching-size data)
           structure (:structure options)]
@@ -69,3 +66,15 @@
        (if-not (:irreducible options)
          (complete/->structure (* 2 n) structure)
          ((comp irreducible/->structure irreducible/->code) n structure))))))
+
+(defn molecule-exists? [name]
+  (-> name ->file .exists))
+
+(def ->output (comp
+               print-answer
+               print-errors
+               validate-structure-position
+               add-search-space-size
+               add-matching-size
+               count-elements
+               load-data))

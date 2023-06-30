@@ -18,11 +18,4 @@
   (parse-opts args cli-options))
 
 (defn -main [& args]
-  (-> args ->input
-      transaction/load-data
-      transaction/count-elements
-      transaction/add-matching-size
-      transaction/add-search-space-size
-      transaction/validate-structure-position
-      transaction/print-errors
-      transaction/print-answer))
+  (-> args ->input transaction/->output))
