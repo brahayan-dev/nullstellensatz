@@ -12,7 +12,7 @@ pom.xml.asc
 .hgignore
 .hg/
 
-/nullstellensatz
-/nullstellensatz.build_artifacts.txt
+/nulls
+/nulls.build_artifacts.txt
 .clj-kondo/
 .lsp/
