@@ -1,17 +1,18 @@
-(ns nullstellensatz.labeled-graph.connected)
+(ns nullstellensatz.labeled-graph.connected
+  (:require [clojure.math.combinatorics :as math]))
 
 (defrecord Pack [k-value
                  p-k-value
                  bin-value
                  factor-value])
 
-(defn- ->factor-value [k] k)
-(defn- ->binomial-value [k _] k)
+(defn- ->subset-value [k] ((Math/pow 2 k) 1))
+(defn- ->binomial-value [k p] (-> p range (math/count-combinations k)))
 
 (defn- ->packs [k-values p]
   (let [->pack (fn [k] (Pack. k
                              (- p k)
-                             (->factor-value k)
+                             (->subset-value k)
                              (->binomial-value k p)))]
   (map ->pack k-values)))
 
@@ -19,4 +20,5 @@
   (->> p (range 1) (->packs p)))
 
 (defn ->size [p]
-  (->> p generate-packs (map :k-value) (apply +')))
+  (let [->product #(-> % vals (apply *'))]
+    (->> p generate-packs (map ->product) (apply +'))))
