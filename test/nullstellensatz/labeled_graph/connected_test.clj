@@ -8,4 +8,4 @@
   (is (= 4 (connected/->size 3)))
   (is (= 38 (connected/->size 4)))
   (is (= 728 (connected/->size 5)))
-  #_(is (= 2830 (connected/->size 6))))
+  (is (= 26704 (connected/->size 6))))
