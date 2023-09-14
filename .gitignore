@@ -16,3 +16,5 @@ pom.xml.asc
 /nulls.build_artifacts.txt
 .clj-kondo/
 .lsp/
+
+.DS_Store
