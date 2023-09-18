@@ -9,7 +9,8 @@
 
 (defrecord Structure [])
 
-(def ^:private state (atom {:numeric {}
+(def ^:private state (atom {:basic {}
+                            :numeric {}
                             :constructive {}}))
 
 (defn- debug-log
@@ -24,7 +25,7 @@
 (defn- ->>state [k i v]
     (swap! state assoc-in [k i] v) v)
 
-(defn- ->subset-value [k] (->> k (Math/pow 2) dec bigint))
+(defn- ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
 
 (defn- ->binomial-value [p k]
   (let [->combinations #(->> k dec (count-combinations %))]
@@ -50,14 +51,19 @@
       (*' k-quantity p-k-quantity subset-value binomial-value))))
 
 (defn- ->numeric-store [packs]
-  (->> packs
-       (map ->quantity)
-       (apply +')
-       (->>state :numeric (get-in packs [0 :n-value]))))
+  (let [index (get-in packs [0 :n-value])]
+    (->> packs
+         (map ->quantity)
+         (->>state :constructive index)
+         (apply +')
+         (->>state :numeric index))))
 
 (defn ->size [n]
   (let [->answer (comp ->numeric-store ->basic-store)]
     (->> n inc (range 1) (mapv ->answer) last)))
 
-(comment (let [p 90] (->size p)))
-(comment (clojure.pprint/pprint (:numeric @state)))
+(defn ->code [n m]
+  )
+
+(comment (let [p 3] (->size p)))
+(comment (clojure.pprint/pprint @state))
