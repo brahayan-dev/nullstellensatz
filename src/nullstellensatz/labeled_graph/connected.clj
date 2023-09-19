@@ -7,10 +7,15 @@
                  subset-value
                  binomial-value])
 
-(defrecord Structure [])
+(defrecord Structure [n-value
+                      k-value
+                      labels
+                      nodes
+                      left-graph
+                      right-graph])
 
-(def ^:private state (atom {:basic {}
-                            :numeric {}
+(def ^:private state (atom {:quantities {}
+                            :polynomials {}
                             :constructive {}}))
 
 (defn- debug-log
@@ -23,7 +28,7 @@
      (clojure.pprint/pprint t) x)))
 
 (defn- ->>state [k i v]
-    (swap! state assoc-in [k i] v) v)
+  (swap! state assoc-in [k i] v) v)
 
 (defn- ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
 
@@ -41,13 +46,13 @@
 
 (defn- ->basic-store [n]
   (let [->values #(if (= 1 %) '(1) (range 1 %))]
-    (->> n ->values vec (->packs n) (->>state :basic n))))
+    (->> n ->values vec (->packs n) (->>state :polynomials n))))
 
 (defn- ->quantity [{:keys [n-value k-value p-k-value subset-value binomial-value]}]
   (if (< n-value 3)
-    (->>state :numeric n-value 1)
-    (let [k-quantity (get-in @state [:numeric k-value])
-          p-k-quantity (get-in @state [:numeric p-k-value])]
+    (->>state :quantities n-value 1)
+    (let [k-quantity (get-in @state [:quantities k-value])
+          p-k-quantity (get-in @state [:quantities p-k-value])]
       (*' k-quantity p-k-quantity subset-value binomial-value))))
 
 (defn- ->numeric-store [packs]
@@ -56,14 +61,21 @@
          (map ->quantity)
          (->>state :constructive index)
          (apply +')
-         (->>state :numeric index))))
+         (->>state :quantities index))))
+(defn- ->polynomials [n]
+  (->> n inc (range 1) (map ->basic-store)))
 
 (defn ->size [n]
-  (let [->answer (comp ->numeric-store ->basic-store)]
-    (->> n inc (range 1) (mapv ->answer) last)))
+  (->> n ->polynomials (mapv ->numeric-store) last))
+
+(defn- ->k-value [_polynomial m]
+  (->> m debug-log))
 
 (defn ->code [n m]
-  )
+  (let [items (->polynomials n)
+        k (-> items (nth n) (->k-value m))]
+    (Structure. n k #{} #{} {} {})))
 
-(comment (let [p 3] (->size p)))
+(comment (nth [:a :b :c] 1))
+(comment (let [p 3] (->code p 2)))
 (comment (clojure.pprint/pprint @state))
