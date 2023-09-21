@@ -8,7 +8,8 @@
                  [org.clojure/math.combinatorics "0.2.0"]]
   :main ^:skip-aot nullstellensatz.core
   :target-path "target/%s"
-  :profiles {:dev {:plugins [[com.github.clojure-lsp/lein-clojure-lsp "1.4.0"]]}
+  :profiles {:dev {:dependencies [[nubank/matcher-combinators "3.8.8"]]
+                   :plugins [[com.github.clojure-lsp/lein-clojure-lsp "1.4.0"]]}
              :uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}
   :aliases {"format-fix" ["clojure-lsp" "format"]

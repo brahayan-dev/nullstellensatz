@@ -14,9 +14,11 @@
                       left-graph
                       right-graph])
 
-(def ^:private state (atom {:terms {}
+(def ^:private empty-state {:terms {}
                             :quantities {}
-                            :polynomials {}}))
+                            :polynomials {}})
+
+(def ^:private state (atom empty-state))
 
 (defn- debug-log
   ([x]
@@ -29,6 +31,11 @@
 
 (defn- ->>state [k i v]
   (swap! state assoc-in [k i] v) v)
+
+(defn state->> [k] (get @state k))
+
+(defn clear-state []
+  (reset! state empty-state))
 
 (defn- ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
 
@@ -44,7 +51,7 @@
                         (->binomial-value n k)))]
     (mapv ->pack k-values)))
 
-(defn- ->basic-store [n]
+(defn ->stored-packs [n]
   (let [->k-values #(if (= 1 %) '(1) (range 1 %))]
     (->> n ->k-values vec (->packs n) (->>state :polynomials n))))
 
@@ -55,7 +62,7 @@
           p-k-quantity (get-in @state [:quantities p-k-value])]
       (*' k-quantity p-k-quantity subset-value binomial-value))))
 
-(defn- ->numeric-store [packs]
+(defn ->stored-stocks [packs]
   (let [index (get-in packs [0 :n-value])]
     (->> packs
          (map ->quantity)
@@ -64,17 +71,16 @@
          (->>state :quantities index))))
 
 (defn- ->polynomials [n]
-  (->> n inc (range 1) (map ->basic-store)))
+  (->> n inc (range 1) (map ->stored-packs)))
 
 (defn ->size [n]
-  (->> n ->polynomials (mapv ->numeric-store) last))
+  (->> n ->polynomials (mapv ->stored-stocks) last))
 
 (defn- ->k-value [polynomial terms n m]
   (let [items (rest polynomial)
         value (-> polynomial first ->quantity)]
     (if (<= m value)
-      (as-> terms $
-        (->>state :terms n $) (count $) (inc $))
+      (->> terms (->>state :terms n) count inc)
       (recur items (conj terms value) n (- m value)))))
 
 (defn ->code [n m]
@@ -84,5 +90,5 @@
     (Structure. n k labels #{} {} {})))
 
 (comment (nth [:a :b :c] 0))
-(comment (let [p 3] (->code p 2)))
+(comment (clojure.pprint/pprint (->>state :terms 1 2)))
 (comment (clojure.pprint/pprint @state))
