@@ -8,5 +8,13 @@
                  [org.clojure/math.combinatorics "0.2.0"]]
   :main ^:skip-aot nullstellensatz.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all
-                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
+  :profiles {:dev {:plugins [[com.github.clojure-lsp/lein-clojure-lsp "1.4.0"]]}
+             :uberjar {:aot :all
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}
+  :aliases {"format-fix" ["clojure-lsp" "format"]
+            "format" ["clojure-lsp" "format" "--dry"]
+            "clean-ns-fix" ["clojure-lsp" "clean-ns"]
+            "diagnostics" ["clojure-lsp" "diagnostics"]
+            "clean-ns" ["clojure-lsp" "clean-ns" "--dry"]
+            "list-fix" ["do" ["format-fix"] ["clean-ns-fix"]]
+            "lint" ["do" ["diagnostics"] ["format"] ["clean-ns"]]})

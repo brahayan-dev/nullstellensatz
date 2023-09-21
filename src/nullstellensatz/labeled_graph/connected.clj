@@ -23,7 +23,7 @@
      (clojure.pprint/pprint t) x)))
 
 (defn- ->>state [k i v]
-    (swap! state assoc-in [k i] v) v)
+  (swap! state assoc-in [k i] v) v)
 
 (defn- ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
 
@@ -62,8 +62,7 @@
   (let [->answer (comp ->numeric-store ->basic-store)]
     (->> n inc (range 1) (mapv ->answer) last)))
 
-(defn ->code [n m]
-  )
+(defn ->code [n m])
 
 (comment (let [p 3] (->size p)))
 (comment (clojure.pprint/pprint @state))
