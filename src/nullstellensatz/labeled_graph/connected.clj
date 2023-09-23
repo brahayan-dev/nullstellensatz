@@ -15,6 +15,7 @@
                       right-graph])
 
 (def ^:private empty-state {:terms {}
+                            :outcomes {}
                             :quantities {}
                             :polynomials {}})
 
@@ -29,7 +30,7 @@
      (clojure.pprint/pprint x)
      (clojure.pprint/pprint t) x)))
 
-(defn- ->>state [k i v]
+(defn ->>state [k i v]
   (swap! state assoc-in [k i] v) v)
 
 (defn state->> [k] (get @state k))
@@ -37,13 +38,13 @@
 (defn clear-state []
   (reset! state empty-state))
 
-(defn- ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
+(defn ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
 
-(defn- ->binomial-value [p k]
+(defn ->binomial-value [p k]
   (let [->combinations #(->> k dec (count-combinations %))]
     (-> p (- 2) range ->combinations)))
 
-(defn- ->packs [n k-values]
+(defn ->packs [n k-values]
   (let [->pack (fn [k]
                  (Pack. n k
                         (- n k)
@@ -55,7 +56,7 @@
   (let [->k-values #(if (= 1 %) '(1) (range 1 %))]
     (->> n ->k-values vec (->packs n) (->>state :polynomials n))))
 
-(defn- ->quantity [{:keys [n-value k-value p-k-value subset-value binomial-value]}]
+(defn ->quantity [{:keys [n-value k-value p-k-value subset-value binomial-value]}]
   (if (< n-value 3)
     (->>state :quantities n-value 1)
     (let [k-quantity (get-in @state [:quantities k-value])
@@ -70,18 +71,18 @@
          (apply +')
          (->>state :quantities index))))
 
-(defn- ->polynomials [n]
+(defn ->polynomials [n]
   (->> n inc (range 1) (map ->stored-packs)))
 
 (defn ->size [n]
   (->> n ->polynomials (mapv ->stored-stocks) last))
 
-(defn- ->k-value [polynomial terms n m]
+(defn ->k-value [polynomial outcomes n m]
   (let [items (rest polynomial)
         value (-> polynomial first ->quantity)]
     (if (<= m value)
-      (->> terms (->>state :terms n) count inc)
-      (recur items (conj terms value) n (- m value)))))
+      (->> outcomes (->>state :outcomes n) count inc)
+      (recur items (conj outcomes value) n (- m value)))))
 
 (defn ->code [n m]
   (let [items (->polynomials n)
