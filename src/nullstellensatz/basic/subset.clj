@@ -5,8 +5,9 @@
 (defn generate [n m]
   (loop [n n m m answer []]
     (if (zero? n) answer
-        (let [size (-> n dec enumerate)
+        (let [n_ (dec n)
+              size (enumerate n_)
               jump? (< size m)]
-          (recur (dec n)
+          (recur n_
                  (if jump? (- m size) m)
                  (if jump? (cons n answer) answer))))))
