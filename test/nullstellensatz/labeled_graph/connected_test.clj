@@ -33,30 +33,19 @@
   (let [->terms (fn [answer v] (connected/->stored-stocks v) answer)]
     (connected/clear-state)
     (is (match?
-         (->terms {1 [1]}
-                  [{:n-value 1 :k-value 1 :p-k-value 0 :subset-value 1 :binomial-value 1}])
+         (->terms {1 [1]} (get polynomials 1))
          (connected/state->> :terms)))
     (is (match?
-         (->terms {1 [1]}
-                  [{:n-value 2 :k-value 1 :p-k-value 1 :subset-value 1 :binomial-value 1}])
+         (->terms {1 [1]} (get polynomials 2))
          (connected/state->> :terms)))
     (is (match?
-         (->terms {1 [1] 2 [1] 3 [1 3]}
-                  [{:n-value 3 :k-value 1 :p-k-value 2 :subset-value 1 :binomial-value 1}
-                   {:n-value 3 :k-value 2 :p-k-value 1 :subset-value 3 :binomial-value 1}])
+         (->terms {1 [1] 2 [1] 3 [1 3]} (get polynomials 3))
          (connected/state->> :terms)))
     (is (match?
-         (->terms {1 [1] 2 [1] 3 [1 3] 4 [4 6 28]}
-                  [{:n-value 4 :k-value 1 :p-k-value 3 :subset-value 1 :binomial-value 1}
-                   {:n-value 4 :k-value 2 :p-k-value 2 :subset-value 3 :binomial-value 2}
-                   {:n-value 4 :k-value 3 :p-k-value 1 :subset-value 7 :binomial-value 1}])
+         (->terms {1 [1] 2 [1] 3 [1 3] 4 [4 6 28]} (get polynomials 4))
          (connected/state->> :terms)))
     (is (match?
-         (->terms {1 [1] 2 [1] 3 [1 3] 4 [4 6 28] 5 [38 36 84 570]}
-                  [{:n-value 5 :k-value 1 :p-k-value 4 :subset-value 1 :binomial-value 1}
-                   {:n-value 5 :k-value 2 :p-k-value 3 :subset-value 3 :binomial-value 3}
-                   {:n-value 5 :k-value 3 :p-k-value 2 :subset-value 7 :binomial-value 3}
-                   {:n-value 5 :k-value 4 :p-k-value 1 :subset-value 15 :binomial-value 1}])
+         (->terms {1 [1] 2 [1] 3 [1 3] 4 [4 6 28] 5 [38 36 84 570]} (get polynomials 5))
          (connected/state->> :terms)))))
 
 (deftest check->size
