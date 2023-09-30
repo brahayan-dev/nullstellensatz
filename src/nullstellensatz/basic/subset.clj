@@ -1,18 +1,17 @@
 (ns nullstellensatz.basic.subset)
 
-(def ^:private state (atom {:code {}
-                            :stock {}}))
-
-(defn ->>state [k i v]
-  (swap! state assoc-in [k i] v) v)
-
-(defn state->> [k] (get @state k))
-
 (defn enumerate [n] (->> n (Math/pow 2) Math/round))
 
-(defn search [n m])
+(defn search [n m]
+  (loop [n n m m answer []]
+    (if (zero? n) answer
+        (let [size (-> n dec enumerate)
+              jump? (< size m)
+              value (if jump? 1 0)]
+          (recur (dec n) (if jump? (- m size) m) (conj answer value))))))
 
-(defn generate [n m])
-
-(comment (search 10 100))
-(comment (state->> :stock))
+(defn generate [n m]
+  (let [code (search n m)
+        ->selected (fn [index v] (when (= v 1) (inc index)))
+        ->xform (comp (map-indexed ->selected) (remove nil?))]
+    (->> code (eduction ->xform) vec)))
