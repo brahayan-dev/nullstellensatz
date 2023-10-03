@@ -17,17 +17,17 @@
       {:n-value 5 :k-value 3 :p-k-value 2 :subset-value 7 :binomial-value 3}
       {:n-value 5 :k-value 4 :p-k-value 1 :subset-value 15 :binomial-value 1}]})
 
-(deftest check->stored-packs
+(deftest check->polynomials
   (is (match? (get polynomials 1)
-              (connected/->stored-packs 1)))
+              (connected/->polynomials 1)))
   (is (match? (get polynomials 2)
-              (connected/->stored-packs 2)))
+              (connected/->polynomials 2)))
   (is (match? (get polynomials 3)
-              (connected/->stored-packs 3)))
+              (connected/->polynomials 3)))
   (is (match? (get polynomials 4)
-              (connected/->stored-packs 4)))
+              (connected/->polynomials 4)))
   (is (match? (get polynomials 5)
-              (connected/->stored-packs 5))))
+              (connected/->polynomials 5))))
 
 (deftest check->stored-stocks
   (let [->terms (fn [answer v] (connected/->stored-stocks v) answer)]
@@ -56,8 +56,8 @@
   (is (= 728 (connected/->size 5)))
   (is (= 26704 (connected/->size 6))))
 
-#_(deftest check->k-value
-    (is (= 1 (connected/->k-value))))
+(deftest check->k-value
+  (is (= 1 (connected/->k-value (get polynomials 3) 3 2))))
 
 #_(deftest check->code
     (is (match?
