@@ -1,5 +1,7 @@
 (ns nullstellensatz.labeled-graph.connected
-  (:require [clojure.math.combinatorics :refer [count-combinations]]))
+  (:require
+   [nullstellensatz.basic.combination :as combination]
+   [nullstellensatz.basic.subset :as subset]))
 
 (defrecord Pack [n-value
                  k-value
@@ -38,11 +40,12 @@
 (defn clear-state []
   (reset! state empty-state))
 
-(defn ->subset-value [k] (->> k (Math/pow 2) Math/round dec))
+(defn ->subset-value [k] (->> k subset/enumerate dec))
 
 (defn ->binomial-value [p k]
-  (let [->combinations #(->> k dec (count-combinations %))]
-    (-> p (- 2) range ->combinations)))
+  (let [p_ (- p 2)
+        k_ (dec k)]
+    (combination/enumerate p_ k_)))
 
 (defn ->packs [n k-values]
   (let [->pack (fn [k]
@@ -74,19 +77,20 @@
 (defn ->polynomials [n]
   (->> n inc (range 1) (map ->stored-packs)))
 
-(defn ->size [n]
+(defn enumerate [n]
   (->> n ->polynomials (mapv ->stored-stocks) last))
 
-(defn ->k-value [polynomial outcomes n m]
-  (let [items (rest polynomial)
-        value (-> polynomial first ->quantity)]
-    (if (<= m value)
-      (->> outcomes (->>state :outcomes n) count inc)
-      (recur items (conj outcomes value) n (- m value)))))
+(defn ->k-value [polynomial n m]
+  (loop [p polynomial answer [] n n m m]
+    (let [items (rest p)
+          size 3 #_(-> p first ->quantity)]
+      (if (zero? n)
+        (->> answer (->>state :outcomes n) count inc)
+        (recur items (conj answer size) (dec n) (- m size))))))
 
-(defn ->code [n m]
+(defn generate [n m]
   (let [items (->polynomials n)
-        k (-> items (nth n) (->k-value [] n m))
+        k (-> items (nth n) (->k-value n m))
         labels #{}]
     (Structure. n k labels #{} {} {})))
 

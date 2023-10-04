@@ -56,8 +56,9 @@
   (is (= 728 (connected/->size 5)))
   (is (= 26704 (connected/->size 6))))
 
-#_(deftest check->k-value
-    (is (= 1 (connected/->k-value))))
+(comment (get polynomials 3))
+(deftest check->k-value
+  (is (= 1 (-> polynomials (get 3) (connected/->k-value 3 1)))))
 
 #_(deftest check->code
     (is (match?
