@@ -30,12 +30,17 @@
      (clojure.pprint/pprint x)
      (clojure.pprint/pprint t) x)))
 
-(defn ->>state [k i v]
-  (swap! state assoc-in [k i] v) v)
+(defn ->>state [field index v]
+  (swap! state assoc-in [field index] v) v)
 
 (defn state->>
-  ([k default] (get @state k default))
-  ([k n default] (get-in @state [k n] default)))
+  ([field]
+   (get @state field))
+  ([field index]
+   (get-in @state [field index]))
+  ([field index default]
+   (get-in @state [field index]
+           (->>state field index default))))
 
 (defn ->subset [k]
   (->> k subset/enumerate dec))
@@ -55,38 +60,30 @@
                              (->binomial n k))))]
     (->> n ->items (mapv ->answer))))
 
-(defn ->outcomes [n]
-  (state->> :outcomes n
-            (->> n
-                 inc
-                 ->items
-                 (mapv ->packs)
-                 (->>state :outcomes n))))
+(defn ->size [n]
+  (->> :outcomes
+       state->>
+       (into [])
+       (filter (fn [[[n-value _] _]] (= n-value n)))
+       (map (fn [[_ v]] v))
+       (reduce +)))
 
-#_(defn ->quantity [n]
-    (state->> :quantities n
-              (if (< n 3)
-                (state->> :quantities n 1)
-                (let [items (->polynomial n)]
-                  (*' k-quantity p-k-quantity subset-value binomial-value)))))
+(defn ->outcomes [{:keys [n-value k-value n-k-value subset-value binomial-value]}]
+  (state->> :outcomes [n-value k-value]
+            (if (< n-value 3) 1
+                (let [k-outcome (->size k-value)
+                      n-k-outcome (->size n-k-value)]
+                  (*' k-outcome n-k-outcome subset-value binomial-value)))))
 
-(defn clear-state []
-  (reset! state empty-state))
+(defn ->quantities [n]
+  (->> n
+       inc
+       ->items
+       (mapv ->packs)
+       flatten
+       (mapv ->outcomes)))
 
-#_(defn ->stored-packs [n]
-    (let [->k-values #(if (= 1 %) '(1) (range 1 %))]
-      (->> n ->k-values vec (->packs n) (->>state :polynomials n))))
-
-#_(defn ->stored-stocks [packs]
-    (let [index (get-in packs [0 :n-value])]
-      (->> packs
-           (map ->quantity)
-           (->>state :terms index)
-           (apply +')
-           (->>state :quantities index))))
-
-#_(defn enumerate [n]
-    (->> n ->polynomials (mapv ->stored-stocks) last))
+(defn enumerate [n] (->quantities n) (->size n))
 
 #_(defn ->k-value [polynomial n m]
     (loop [n n m m p polynomial out []]
@@ -104,6 +101,5 @@
           labels #{}]
       (Structure. n k labels #{} {} {})))
 
-(comment (nth [:a :b :c] 0))
-(comment (clojure.pprint/pprint (->>state :terms 1 2)))
+(comment (clojure.pprint/pprint (->quantities 5)))
 (comment (clojure.pprint/pprint @state))
