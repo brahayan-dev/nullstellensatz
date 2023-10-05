@@ -9,14 +9,10 @@
                  subset-value
                  binomial-value])
 
-(defrecord Structure [n-value
-                      k-value
-                      labels
-                      nodes
-                      left-graph
-                      right-graph])
+(defrecord Structure [n-value k-value labels nodes])
 
 (def ^:private empty-state {:packs {}
+                            :sizes {}
                             :outcomes {}})
 
 (def ^:private state (atom empty-state))
@@ -30,10 +26,10 @@
      (clojure.pprint/pprint x)
      (clojure.pprint/pprint t) x)))
 
-(defn ->>state [field index v]
+(defn- ->>state [field index v]
   (swap! state assoc-in [field index] v) v)
 
-(defn state->>
+(defn- state->>
   ([field]
    (get @state field))
   ([field index]
@@ -42,17 +38,15 @@
    (get-in @state [field index]
            (->>state field index default))))
 
-(defn ->subset [k]
-  (->> k subset/enumerate dec))
-
-(defn ->binomial [p k]
-  (combination/enumerate (- p 2) (dec k)))
-
 (defn ->items [n]
   (if (= 1 n) '(1) (range 1 n)))
 
 (defn ->packs [n]
-  (letfn [(->answer [k]
+  (letfn [(->subset [k]
+            (->> k subset/enumerate dec))
+          (->binomial [p k]
+            (combination/enumerate (- p 2) (dec k)))
+          (->answer [k]
             (state->> :packs [n k]
                       (Pack. n k
                              (- n k)
@@ -60,19 +54,20 @@
                              (->binomial n k))))]
     (->> n ->items (mapv ->answer))))
 
-(defn ->size [n]
-  (->> :outcomes
-       state->>
-       (into [])
-       (filter (fn [[[n-value _] _]] (= n-value n)))
-       (map (fn [[_ v]] v))
-       (reduce +)))
+(defn- ->sizes [n]
+  (state->> :sizes n
+            (->> :outcomes
+                 state->>
+                 (into [])
+                 (filter (fn [[[n-value _] _]] (= n-value n)))
+                 (map (fn [[_ v]] v))
+                 (reduce +))))
 
-(defn ->outcomes [{:keys [n-value k-value n-k-value subset-value binomial-value]}]
+(defn- ->outcomes [{:keys [n-value k-value n-k-value subset-value binomial-value]}]
   (state->> :outcomes [n-value k-value]
             (if (< n-value 3) 1
-                (let [k-outcome (->size k-value)
-                      n-k-outcome (->size n-k-value)]
+                (let [k-outcome (->sizes k-value)
+                      n-k-outcome (->sizes n-k-value)]
                   (*' k-outcome n-k-outcome subset-value binomial-value)))))
 
 (defn ->quantities [n]
@@ -83,23 +78,15 @@
        flatten
        (mapv ->outcomes)))
 
-(defn enumerate [n] (->quantities n) (->size n))
+(defn enumerate [n] (->quantities n) (->sizes n))
 
-#_(defn ->k-value [polynomial n m]
-    (loop [n n m m p polynomial out []]
-      (let [v (-> p first ->quantity)]
-        (if (= 0 n)
-          (->> out (->>state :outcomes n))
-          (recur (dec n)
-                 (- m v)
-                 (rest p)
-                 (cons n out))))))
-
-#_(defn generate [n m]
-    (let [items (->polynomials n)
-          k (-> items (nth n) (->k-value n m))
-          labels #{}]
-      (Structure. n k labels #{} {} {})))
+(defn generate [n m]
+  (loop [k 1 m m labels [] nodes []]
+    (if (> k n) (Structure. n k labels nodes)
+        (let [size (enumerate k)
+              jump? (< size m)]
+          (recur (inc k)
+                 (if jump? (- m size) m) labels nodes)))))
 
 (comment (clojure.pprint/pprint (->quantities 5)))
 (comment (clojure.pprint/pprint @state))
