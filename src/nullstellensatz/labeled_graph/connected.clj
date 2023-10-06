@@ -17,15 +17,6 @@
 
 (def ^:private state (atom empty-state))
 
-(defn- debug-log
-  ([x]
-   (debug-log "X" x))
-  ([title x]
-   (let [t (str "|---|" title "|-------------|")]
-     (clojure.pprint/pprint t)
-     (clojure.pprint/pprint x)
-     (clojure.pprint/pprint t) x)))
-
 (defn- ->>state [field index v]
   (swap! state assoc-in [field index] v) v)
 
@@ -80,13 +71,25 @@
 
 (defn enumerate [n] (->quantities n) (->sizes n))
 
+(defn ->term [n m]
+  (loop [n n m m k 1]
+    (let [outcome (state->> :outcomes [n k])
+          jump? (>= m outcome)]
+      (if jump? [k m]
+          (recur n (if jump? (- m outcome) m) (inc k))))))
+
 (defn generate [n m]
-  (loop [k 1 m m labels [] nodes []]
-    (if (> k n) (Structure. n k labels nodes)
-        (let [size (enumerate k)
-              jump? (< size m)]
-          (recur (inc k)
-                 (if jump? (- m size) m) labels nodes)))))
+  (let [_ (->quantities n)
+        [k m-rest] (->term n m)]
+    (Structure. n k m-rest [])))
+
+#_(defn generate [n m]
+    (loop [k 1 m m labels [] nodes []]
+      (if (> k n) (Structure. n k labels nodes)
+          (let [size (enumerate k)
+                jump? (< size m)]
+            (recur (inc k)
+                   (if jump? (- m size) m) labels nodes)))))
 
 (comment (clojure.pprint/pprint (->quantities 5)))
 (comment (clojure.pprint/pprint @state))
