@@ -58,3 +58,4 @@
   (is (= 38 (connected/enumerate 4)))
   (is (= 728 (connected/enumerate 5)))
   (is (= 26704 (connected/enumerate 6))))
+

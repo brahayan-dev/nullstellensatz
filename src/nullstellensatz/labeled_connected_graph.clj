@@ -71,25 +71,33 @@
 
 (defn enumerate [n] (->quantities n) (->sizes n))
 
-(defn ->term [n m]
+(defn- find-term [n m]
   (loop [n n m m k 1]
     (let [outcome (state->> :outcomes [n k])
-          jump? (>= m outcome)]
-      (if jump? [k m]
-          (recur n (if jump? (- m outcome) m) (inc k))))))
+          jump? (< m outcome)
+          m_ (- m outcome)
+          k_ (inc k)]
+      (if (not jump?) [k_ m_]
+          (recur n (if jump? m_ m) k_)))))
+
+(defn find-labels [n k m]
+  (let [outcome (state->> :outcomes [n k])
+        m_ (-> m (quot outcome) inc)]
+    [(combination/generate (- n 2) (dec k) m_) (rem m outcome)]))
+
+(defn find-nodes [n k m]
+  (let [{:keys [subset-value n-k-value]} (state->> :polynomials [n k])
+        g-1 (enumerate k)
+        g-2 (enumerate n-k-value)
+        m_ (->> (*' subset-value g-1 g-2) (quot m) inc)]
+    [(subset/generate (dec n) m_) (rest m m_)]))
 
 (defn generate [n m]
   (let [_ (->quantities n)
-        [k m-rest] (->term n m)]
-    (Structure. n k m-rest [])))
+        [k m-1] (find-term n m)
+        [labels m-2] (find-labels n k m-1)
+        [nodes _m-3] (find-nodes n k m-2)]
+    (Structure. n k labels nodes)))
 
-#_(defn generate [n m]
-    (loop [k 1 m m labels [] nodes []]
-      (if (> k n) (Structure. n k labels nodes)
-          (let [size (enumerate k)
-                jump? (< size m)]
-            (recur (inc k)
-                   (if jump? (- m size) m) labels nodes)))))
-
-(comment (clojure.pprint/pprint (->quantities 5)))
+(comment (clojure.pprint/pprint (generate 4 2)))
 (comment (clojure.pprint/pprint @state))
