@@ -1,5 +1,5 @@
-(ns nullstellensatz.basic.combination-test
-  (:require [nullstellensatz.basic.combination :as combination]
+(ns nullstellensatz.combination-test
+  (:require [nullstellensatz.combination :as combination]
             [matcher-combinators.test :refer [match?]]
             [clojure.test :refer [deftest is]]))
 

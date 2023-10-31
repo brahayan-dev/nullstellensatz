@@ -1,6 +1,6 @@
-(ns nullstellensatz.matching.complete-test
+(ns nullstellensatz.complete-linked-diagram-test
   (:require [clojure.test :refer [deftest is]]
-            [nullstellensatz.matching.complete :as complete]))
+            [nullstellensatz.complete-linked-diagram :as complete]))
 
 (deftest check->code
   (is (= [0 0 0 0] (complete/->code 8 0)))

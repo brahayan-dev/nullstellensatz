@@ -1,7 +1,7 @@
-(ns nullstellensatz.labeled-graph.connected
+(ns nullstellensatz.labeled-connected-graph
   (:require
-   [nullstellensatz.basic.combination :as combination]
-   [nullstellensatz.basic.subset :as subset]))
+   [nullstellensatz.combination :as combination]
+   [nullstellensatz.subset :as subset]))
 
 (defrecord Pack [n-value
                  k-value

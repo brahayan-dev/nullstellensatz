@@ -1,4 +1,4 @@
-(ns nullstellensatz.matching.irreducible)
+(ns nullstellensatz.irreducible-linked-diagram)
 
 (defrecord Pack [k-value
                  total-value

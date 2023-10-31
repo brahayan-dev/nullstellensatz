@@ -1,8 +1,8 @@
-(ns nullstellensatz.labeled-graph.connected-test
+(ns nullstellensatz.labeled-connected-graph-test
   (:require
    [clojure.test :refer [deftest is]]
    [matcher-combinators.test :refer [match?]]
-   [nullstellensatz.labeled-graph.connected :as connected]))
+   [nullstellensatz.labeled-connected-graph :as connected]))
 
 (def polynomials
   {1 [{:n-value 1 :k-value 1 :n-k-value 0 :subset-value 1 :binomial-value 1}]

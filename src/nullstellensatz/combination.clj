@@ -1,4 +1,4 @@
-(ns nullstellensatz.basic.combination)
+(ns nullstellensatz.combination)
 
 (defn- factorial [n]
   (->> n inc (range 2) (reduce *')))

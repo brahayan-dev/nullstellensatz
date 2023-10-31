@@ -2,8 +2,8 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :refer [split join]]
-            [nullstellensatz.matching.complete :as complete]
-            [nullstellensatz.matching.irreducible :as irreducible]))
+            [nullstellensatz.complete-linked-diagram :as complete]
+            [nullstellensatz.irreducible-linked-diagram :as irreducible]))
 
 (defn- ->file [name]
   (io/file "data" (str name ".edn")))

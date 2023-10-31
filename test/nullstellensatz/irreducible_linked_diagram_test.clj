@@ -1,6 +1,6 @@
-(ns nullstellensatz.matching.irreducible-test
+(ns nullstellensatz.irreducible-linked-diagram-test
   (:require [clojure.test :refer [deftest is]]
-            [nullstellensatz.matching.irreducible :as irreducible]))
+            [nullstellensatz.irreducible-linked-diagram :as irreducible]))
 
 (deftest check->code
   (is (= [0 [1 0] [2 0]] (irreducible/->code 3 0)))

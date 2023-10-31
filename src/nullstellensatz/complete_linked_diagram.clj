@@ -1,4 +1,4 @@
-(ns nullstellensatz.matching.complete)
+(ns nullstellensatz.complete-linked-diagram)
 
 (defn- generate-odd-numbers [n]
   (range 1 n 2))

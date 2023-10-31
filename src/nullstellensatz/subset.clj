@@ -1,4 +1,4 @@
-(ns nullstellensatz.basic.subset)
+(ns nullstellensatz.subset)
 
 (defn enumerate [n] (->> n (Math/pow 2) Math/round))
 
