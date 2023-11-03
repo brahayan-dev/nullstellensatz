@@ -41,6 +41,22 @@
         previous-bell-val (rem tail bell-val)]
     [n k-val binomial-val previous-bell-val]))
 
+;; def search_partition_with_code(code):
+;;     n,k,m1,m2 = code
+;;     if n==0:
+;;         return []
+;;     else:
+;;         relabel_set = gen_combination(n-1,k,m1)
+;;         partial_partition = search_partition_with_index(k,m2)
+;;         partial_partition = [[relabel_set[i-1] for i in block] for block in partial_partition]
+;;         last_block = [i for i in range(1,n+1) if i not in relabel_set]
+;;         partial_partition.append(last_block)
+;;     return partial_partition
 
+        
+(defn search-by-code [[n k-val binomial-val previous-bell-val]]
+  nil)
+
+(def search (comp search-by-code encode))
 
 
