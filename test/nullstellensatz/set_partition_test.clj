@@ -28,3 +28,17 @@
 (deftest check-wrap
   (is (match? [[1 0 0 0] [2 1 0 0] [4 2 0 1]] (set-partition/wrap 4 5)))
   (is (match? [[0 0 0 0] [2 0 0 0] [3 2 0 0] [4 3 0 3]] (set-partition/wrap 4 13))))
+
+(deftest check-exist?
+  (is (= true (set-partition/exist? [1 2 3] 3)))
+  (is (= false (set-partition/exist? [1 2 3] 5))))
+
+(deftest check-search
+  (is (match? [[1 2 3]] (set-partition/search 3 0)))
+  (is (match? [[2 3] [1]] (set-partition/search 3 1)))
+  (is (match? [[1 3] [2]] (set-partition/search 3 2)))
+  (is (match? [[3] [1 2]] (set-partition/search 3 3)))
+  (is (match? [[3] [2] [1]] (set-partition/search 3 4)))
+  (is (match? [[3 4] [2] [1]] (set-partition/search 4 5)))
+  (is (match? [[4] [3] [1 2]] (set-partition/search 4 13))))
+

@@ -11,7 +11,7 @@
 
 (defn generate [n k i]
   (loop [n n k k index i answer []]
-    (if (or (zero? n) (zero? k)) answer
+    (if (or (zero? n) (zero? k)) (vec answer)
         (let [n_ (dec n)
               size (enumerate n_ k)
               same? (= n k)

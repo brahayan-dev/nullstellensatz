@@ -2,16 +2,22 @@
   (:require
    [nullstellensatz.combination :as combination]))
 
-(defn- ->ints-from-zero-to-val [n]
+(defn- ->ints-from-zero-to-val-less-one [n]
   (range 0 n))
+
+(defn- ->ints-from-one-to-val [n]
+  (->> n inc (range 1)))
 
 (defn ->binomial [n k]
   (combination/enumerate (dec n) k))
 
+(defn ->binomial-object [n k index]
+  (combination/generate (dec n) k (inc index)))
+
 (defn- enumerate-worker [n answer]
   (if (< n 2) 1
       (->> n
-           ->ints-from-zero-to-val
+           ->ints-from-zero-to-val-less-one
            (map #(->binomial n %))
            (map *' answer)
            (apply +'))))
@@ -25,7 +31,7 @@
       (recur n tail updated-answer))))
 
 (defn enumerate [n]
-  (let [k-vals (->ints-from-zero-to-val n)]
+  (let [k-vals (->ints-from-zero-to-val-less-one n)]
     (first (enumerate-helper n k-vals []))))
 
 (defn- find-term [n index position]
@@ -48,21 +54,23 @@
       (if (< n 2) updated-answer
           (recur k-val previous-bell-val updated-answer)))))
 
-;; def search_partition_with_code(code):
-;;     n,k,m1,m2 = code
-;;     if n==0:
-;;         return []
-;;     else:
-;;         relabel_set = gen_combination(n-1,k,m1)
-;;         partial_partition = search_partition_with_index(k,m2)
-;;         partial_partition = [[relabel_set[i-1] for i in block] for block in partial_partition]
-;;         last_block = [i for i in range(1,n+1) if i not in relabel_set]
-;;         partial_partition.append(last_block)
-;;     return partial_partition
+(defn- update-block [binomial]
+  (let [->updated-block #(get binomial (dec %) %)]
+    (fn [block] (mapv ->updated-block block))))
+
+(defn exist? [v item]
+  ((comp not nil? some) #{item} v))
+
+(defn- ->object [previous-partition [n k-val binomial-val _]]
+  (case n
+    0 previous-partition
+    1 (cons [1] previous-partition)
+    (let [binomial (->binomial-object n k-val binomial-val)
+          block (remove #(exist? binomial %) (->ints-from-one-to-val n))]
+      (-> binomial update-block (map previous-partition) (conj block)))))
 
 (defn search-by-codes [wrapping]
-  (reduce [] wrapping))
+  (reduce ->object [] wrapping))
 
 (def search (comp search-by-codes wrap))
-
 
