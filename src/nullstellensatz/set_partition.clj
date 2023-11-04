@@ -30,9 +30,9 @@
 
 (defn- find-term [n index position]
   (let [binomial-val (->binomial n position)
-        aux-val (* binomial-val (enumerate position))]
-    (if (>= aux-val index) [position index]
-        (recur n (- index aux-val) (inc position)))))
+        term-val (* binomial-val (enumerate position))]
+    (if (> term-val index) [position index]
+        (recur n (- index term-val) (inc position)))))
 
 (defn encode [n index]
   (let [[k-val tail] (find-term n index 0)
@@ -40,6 +40,13 @@
         binomial-val (quot tail bell-val)
         previous-bell-val (rem tail bell-val)]
     [n k-val binomial-val previous-bell-val]))
+
+(defn wrap [n i]
+  (loop [n n index i answer []]
+    (let [[_ k-val _ previous-bell-val :as code] (encode n index)
+          updated-answer (cons code answer)]
+      (if (< n 2) updated-answer
+          (recur k-val previous-bell-val updated-answer)))))
 
 ;; def search_partition_with_code(code):
 ;;     n,k,m1,m2 = code
@@ -53,10 +60,9 @@
 ;;         partial_partition.append(last_block)
 ;;     return partial_partition
 
-        
-(defn search-by-code [[n k-val binomial-val previous-bell-val]]
-  nil)
+(defn search-by-codes [wrapping]
+  (reduce [] wrapping))
 
-(def search (comp search-by-code encode))
+(def search (comp search-by-codes wrap))
 
 
