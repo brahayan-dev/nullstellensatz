@@ -9,14 +9,14 @@
         p! (factorial (-' n k))]
     (quot n! (*' k! p!))))
 
-(defn generate [n k m]
-  (loop [n n k k m m answer []]
+(defn generate [n k i]
+  (loop [n n k k index i answer []]
     (if (or (zero? n) (zero? k)) answer
         (let [n_ (dec n)
               size (enumerate n_ k)
               same? (= n k)
-              jump? (< size m)]
+              jump? (< size index)]
           (recur n_
                  (if jump? (dec k) k)
-                 (if jump? (-' m size) m)
+                 (if jump? (-' index size) index)
                  (if (or same? jump?) (cons n answer) answer))))))
