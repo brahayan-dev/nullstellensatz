@@ -1,9 +1,11 @@
 (ns nullstellensatz.noncrossing-linked-diagram
   (:require [nullstellensatz.common :as common]))
 
-(defn- enumerate-worker [k cache]
-  (if (< k 2) 1
-      (->> cache vals (apply *'))))
+(defn- enumerate-worker [n cache]
+  (let [k-vals (common/->ints-from-zero-to-val-less-one n)
+        ->terms #(* (get cache %) (get cache (- n 1 %)))]
+    (if (< n 2) 1
+        (->> k-vals (map ->terms) (apply +')))))
 
 (defn- enumerate-helper [n k-vals cache]
   (loop [[head & tail :as k-vals] k-vals cache cache]
@@ -16,4 +18,3 @@
   (let [k-vals (common/->ints-from-zero-to-val n)]
     (enumerate-helper n k-vals {})))
 
-(comment (enumerate 4))
