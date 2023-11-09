@@ -1,12 +1,8 @@
 (ns nullstellensatz.set-partition
   (:require
+    [nullstellensatz.common :as common]
    [nullstellensatz.combination :as combination]))
 
-(defn- ->ints-from-zero-to-val-less-one [n]
-  (range 0 n))
-
-(defn- ->ints-from-one-to-val [n]
-  (->> n inc (range 1)))
 
 (defn ->binomial [n k]
   (combination/enumerate (dec n) k))
@@ -17,7 +13,7 @@
 (defn- enumerate-worker [n answer]
   (if (< n 2) 1
       (->> n
-           ->ints-from-zero-to-val-less-one
+           common/->ints-from-zero-to-val-less-one
            (map #(->binomial n %))
            (map *' answer)
            (apply +'))))
@@ -31,8 +27,8 @@
       (recur n tail updated-answer))))
 
 (defn enumerate [n]
-  (let [k-vals (->ints-from-zero-to-val-less-one n)]
-    (first (enumerate-helper n k-vals []))))
+  (let [k-vals (common/->ints-from-zero-to-val-less-one n)]
+    ((comp first enumerate-helper) n k-vals [])))
 
 (defn- find-term [n index position]
   (let [binomial-val (->binomial n position)
@@ -66,7 +62,7 @@
     0 previous-partition
     1 (cons [1] previous-partition)
     (let [binomial (->binomial-object n k-val binomial-val)
-          block (remove #(exist? binomial %) (->ints-from-one-to-val n))]
+          block (remove #(exist? binomial %) (common/->ints-from-one-to-val n))]
       (-> binomial update-block (map previous-partition) (conj block)))))
 
 (defn search-by-codes [wrapping]
