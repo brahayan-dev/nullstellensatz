@@ -18,3 +18,16 @@
   (let [k-vals (common/->ints-from-zero-to-val n)]
     (enumerate-helper n k-vals {})))
 
+(defn ->k-val [n i k]
+  (if (some zero? [n i]) [0 0]
+      (let [term (* (enumerate k) (enumerate (- n k 1)))
+            m (- i term)]
+        (if (< term i) [k m]
+            (recur n m (inc k))))))
+
+(defn encode [n i]
+  (let [[k m] (->k-val n i 0)
+        p 0
+        q 0]
+    (println k m)
+    [n k p q]))
