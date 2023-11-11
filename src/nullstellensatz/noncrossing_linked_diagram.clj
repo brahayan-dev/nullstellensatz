@@ -18,16 +18,27 @@
   (let [k-vals (common/->ints-from-zero-to-val n)]
     (enumerate-helper n k-vals {})))
 
-(defn ->k-val [n i k]
-  (if (some zero? [n i]) [0 0]
-      (let [term (* (enumerate k) (enumerate (- n k 1)))
-            m (- i term)]
-        (if (< term i) [k m]
-            (recur n m (inc k))))))
+(defn- ->values [n i k]
+  (let [term (* (enumerate k) (enumerate (- n k 1)))]
+    (if (>= term i) [k i]
+        (recur n (- i term) (inc k)))))
 
 (defn encode [n i]
-  (let [[k m] (->k-val n i 0)
-        p 0
-        q 0]
-    (println k m)
-    [n k p q]))
+  (if (some zero? [n i])
+    [n 0 0 0]
+    (let [[k m] (->values n i 0)
+          catalan-val (enumerate (- n k 1))
+          p (quot m catalan-val)
+          q (rem m catalan-val)]
+      [n k p q])))
+
+(defn search-by-code-helper [n k p q answer]
+  (if (zero? n) []
+      (let [n_ (dec n)]
+        (recur n_ k p q answer))))
+
+(defn search-by-code [[n k p q]]
+  (search-by-code-helper n k p q []))
+
+(def search
+  (comp search-by-code encode))

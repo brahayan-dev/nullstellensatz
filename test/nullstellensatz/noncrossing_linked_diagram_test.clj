@@ -16,4 +16,5 @@
 (deftest check-encode
   (is (match? [0 0 0 0] (encode 0 0)))
   (is (match? [1 0 0 0] (encode 1 0)))
-  (is (match? [2 0 0 0] (encode 2 0))))
+  (is (match? [2 0 0 0] (encode 2 0)))
+  (is (match? [4 3 1 0] (encode 4 10))))
