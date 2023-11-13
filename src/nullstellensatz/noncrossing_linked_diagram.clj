@@ -1,5 +1,6 @@
 (ns nullstellensatz.noncrossing-linked-diagram
-  (:require [nullstellensatz.common :as common]))
+  (:require [nullstellensatz.common :as common]
+            [nullstellensatz.combination :as combination]))
 
 (defn- enumerate-worker [n cache]
   (let [k-vals (common/->ints-from-zero-to-val-less-one n)
@@ -42,3 +43,15 @@
 
 (def search
   (comp search-by-code encode))
+
+(defn count-mountain-ranges [n x y]
+  (let [average (/ (+ x y) 2)
+        dynamic-set (- (* 2 n) x)
+        p (combination/enumerate dynamic-set (- n average))
+        q (combination/enumerate dynamic-set (- n 1 average))]
+    (- p q)))
+
+;; (defn- unrank-helper [n i x y low])
+
+;; (defn unrank [n i]
+;;   (unrank-helper n i 1 0 0))
