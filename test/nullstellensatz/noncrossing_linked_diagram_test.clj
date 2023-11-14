@@ -37,3 +37,26 @@
   (is (match? [4 3 2 0] (encode 4 11)))
   (is (match? [4 3 3 0] (encode 4 12)))
   (is (match? [4 3 4 0] (encode 4 13))))
+
+(deftest check-count-mountain-ranges
+  (is (= 1 (count-mountain-ranges 5 5 5)))
+  (is (= 1 (count-mountain-ranges 5 6 4)))
+  (is (= 2 (count-mountain-ranges 5 7 1)))
+  (is (= 3 (count-mountain-ranges 5 6 2)))
+  (is (= 5 (count-mountain-ranges 5 4 4)))
+  (is (= 9 (count-mountain-ranges 5 4 2)))
+  (is (= 14 (count-mountain-ranges 5 2 0)))
+  (is (= 28 (count-mountain-ranges 5 2 2)))
+  (is (= 42 (count-mountain-ranges 5 0 0)))
+  (is (= 42 (count-mountain-ranges 5 1 1)))
+  (is (= 0 (count-mountain-ranges 5 10 2))))
+
+(deftest check-unrank
+  (is (match? [0 1] (unrank 1 0)))
+  (is (match? [0 0 1 1] (unrank 2 0)))
+  (is (match? [0 1 0 1] (unrank 2 1)))
+  (is (match? [0 0 0 1 1 1] (unrank 3 0)))
+  (is (match? [0 0 1 0 1 1] (unrank 3 1)))
+  (is (match? [0 1 0 0 1 1] (unrank 3 2)))
+  (is (match? [0 0 1 1 0 1] (unrank 3 3)))
+  (is (match? [0 1 0 1 0 1] (unrank 3 4))))

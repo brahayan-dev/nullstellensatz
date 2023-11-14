@@ -45,13 +45,23 @@
   (comp search-by-code encode))
 
 (defn count-mountain-ranges [n x y]
-  (let [average (/ (+ x y) 2)
-        dynamic-set (- (* 2 n) x)
-        p (combination/enumerate dynamic-set (- n average))
-        q (combination/enumerate dynamic-set (- n 1 average))]
-    (- p q)))
+  (if (> (+ x y) (* 2 n)) 0
+      (let [average (quot (+ x y) 2)
+            dynamic-set (- (* 2 n) x)
+            p (combination/enumerate dynamic-set (- n average))
+            q (combination/enumerate dynamic-set (- n 1 average))]
+        (- p q))))
 
-;; (defn- unrank-helper [n i x y low])
+(defn- unrank-helper [n i x y low answer]
+  (if (= x ((comp inc *) n 2)) answer
+      (let [m (count-mountain-ranges n x (inc y))
+            jump? (<= i ((comp dec +) low m))]
+        (recur n i
+               (inc x)
+               (if jump? (inc y) (dec y))
+               (if jump? low (+ low m))
+               (-> jump? (if 1 0) (cons answer))))))
 
-;; (defn unrank [n i]
-;;   (unrank-helper n i 1 0 0))
+(defn unrank [n i]
+  (unrank-helper n i 1 0 0 []))
+
