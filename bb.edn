@@ -17,4 +17,9 @@
         (shell "lein uberjar")
         (when (fs/exists? file-jar)
           (fs/delete file-jar))
-        (fs/move (first (->paths)) (str "./" file-jar)))}}
+        (fs/move (first (->paths)) (str "./" file-jar)))
+  get-enumerations-from-one-to-ten (doseq [[object value] (for [object ["d" "c" "s" "b" "g"]
+                                                                value (range 1 11)]
+                                                            [object value])]
+                                     (shell (str "echo -n " object "-" value ": "))
+                                     (shell (str "java -jar nulls.jar -n " value " -o " object)))}}

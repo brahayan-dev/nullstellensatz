@@ -11,13 +11,13 @@
   (is (= [3 [3 1] [3 2]] (irreducible/->code 6 383)))
   (is (= [3 [3 2] [4 20]] (irreducible/->code 7 3972))))
 
-(deftest check->size
-  (is (= 1 (irreducible/->size 1)))
-  (is (= 1 (irreducible/->size 2)))
-  (is (= 4 (irreducible/->size 3)))
-  (is (= 27 (irreducible/->size 4)))
-  (is (= 248 (irreducible/->size 5)))
-  (is (= 2830 (irreducible/->size 6))))
+(deftest check-enumerate
+  (is (= 1 (irreducible/enumerate 1)))
+  (is (= 1 (irreducible/enumerate 2)))
+  (is (= 4 (irreducible/enumerate 3)))
+  (is (= 27 (irreducible/enumerate 4)))
+  (is (= 248 (irreducible/enumerate 5)))
+  (is (= 2830 (irreducible/enumerate 6))))
 
 (deftest check->add
   (let [m-1 [[1 2]]

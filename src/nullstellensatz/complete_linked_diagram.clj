@@ -35,8 +35,8 @@
                                    (cons new-pair))]
             (recur (rest representation) (rest pairs) new-structure))))
 
-(defn ->size [n]
-  (reduce *' 1 (generate-odd-numbers n)))
+(defn enumerate [n]
+  (reduce *' 1 (-> n (* 2) generate-odd-numbers)))
 
 (defn ->code [nucleotids position]
   (let [products (-> nucleotids

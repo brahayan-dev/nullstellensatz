@@ -72,6 +72,6 @@
             (->structure (->code k a))
             (->structure (->code p b))])))
 
-(defn ->size [n]
+(defn enumerate [n]
   (let [packs (generate-packs n)]
     (->> packs (map :total-value) (apply +'))))

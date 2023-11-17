@@ -8,12 +8,12 @@
   (is (= [0 1 2 2] (complete/->code 8 37)))
   (is (= [0 2 4 6] (complete/->code 8 104))))
 
-(deftest check->size
-  (is (= 15 (complete/->size 6)))
-  (is (= 105 (complete/->size 8)))
-  (is (= 945 (complete/->size 10)))
-  (is (= 10395 (complete/->size 12)))
-  (is (= 6190283353629375 (complete/->size 30))))
+(deftest check-enumerate
+  (is (= 15 (complete/enumerate 3)))
+  (is (= 105 (complete/enumerate 4)))
+  (is (= 945 (complete/enumerate 5)))
+  (is (= 10395 (complete/enumerate 6)))
+  (is (= 6190283353629375 (complete/enumerate 15))))
 
 (deftest check->structure
   (is (= #{#{0 7} #{1 2} #{3 4} #{5 6}} (complete/->structure 8 0)))
