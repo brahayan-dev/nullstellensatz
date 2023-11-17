@@ -2,7 +2,8 @@
   (:require
    [clojure.test :refer [deftest is]]
    [matcher-combinators.test :refer [match?]]
-   [nullstellensatz.noncrossing-linked-diagram :refer [encode enumerate]]))
+   [nullstellensatz.noncrossing-linked-diagram :refer
+    [count-mountain-ranges encode enumerate unrank]]))
 
 (deftest check-enumerate
   (is (= 1 (enumerate 0)))
