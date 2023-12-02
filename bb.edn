@@ -10,7 +10,10 @@
             (fs/delete file-name))
           (let [->native (str "native-image -jar "
                               (first (->paths))
-                              " --no-fallback --no-server "
+                              " --no-server"
+                              " --no-fallback"
+                              " --features=clj_easy.graal_build_time.InitClojureClasses"
+                              " "
                               file-name)]
             (shell ->native)))
   jar (do
@@ -22,4 +25,4 @@
                                                                 value (range 1 11)]
                                                             [object value])]
                                      (shell (str "echo -n " object "-" value ": "))
-                                     (shell (str "java -jar nulls.jar -n " value " -o " object)))}}
+                                     (shell (str "./nulls -n " value " -o " object)))}}

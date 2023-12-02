@@ -1,8 +1,7 @@
 (ns nullstellensatz.set-partition
   (:require
-    [nullstellensatz.common :as common]
+   [nullstellensatz.common :as common]
    [nullstellensatz.combination :as combination]))
-
 
 (defn ->binomial [n k]
   (combination/enumerate (dec n) k))
@@ -32,9 +31,9 @@
 
 (defn- find-term [n index position]
   (let [binomial-val (->binomial n position)
-        term-val (* binomial-val (enumerate position))]
+        term-val (*' binomial-val (enumerate position))]
     (if (> term-val index) [position index]
-        (recur n (- index term-val) (inc position)))))
+        (recur n (-' index term-val) (inc position)))))
 
 (defn encode [n index]
   (let [[k-val tail] (find-term n index 0)
@@ -69,4 +68,3 @@
   (reduce ->object [] wrapping))
 
 (def search (comp search-by-codes wrap))
-

@@ -5,7 +5,9 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [org.clojure/tools.cli "1.0.219"]
-                 [org.clojure/math.combinatorics "0.2.0"]]
+                 [org.clojure/math.combinatorics "0.2.0"]
+                 [com.github.clj-easy/graal-build-time "1.0.5"]]
+
   :main ^:skip-aot nullstellensatz.core
   :target-path "target/%s"
   :profiles {:dev {:dependencies [[nubank/matcher-combinators "3.8.8"]]
