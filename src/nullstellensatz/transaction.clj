@@ -3,7 +3,7 @@
    [nullstellensatz.complete-linked-diagram :as complete-linked-diagram]
    [nullstellensatz.irreducible-linked-diagram :as irreducible-linked-diagram]
    [nullstellensatz.labeled-connected-graph :as labeled-connected-graph]
-   [nullstellensatz.noncrossing-linked-diagram :as noncrossing-linked-diagram]
+   [nullstellensatz.catalan-family :as noncrossing-linked-diagram]
    [nullstellensatz.set-partition :as set-partition]))
 
 #_(defn- ->file [name]

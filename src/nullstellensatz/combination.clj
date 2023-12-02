@@ -4,10 +4,10 @@
   (->> n inc (range 2) (reduce *')))
 
 (defn enumerate [n k]
-  (let [k! (factorial k)
-        n! (factorial n)
-        p! (factorial (-' n k))]
-    (quot n! (*' k! p!))))
+  (let [k-val (factorial k)
+        n-val (factorial n)
+        p-val (factorial (-' n k))]
+    (quot n-val (*' k-val p-val))))
 
 (defn generate [n k i]
   (loop [n n k k index i answer []]
