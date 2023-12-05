@@ -19,5 +19,12 @@
     (if (> i n) (get cache n)
         (recur (inc i) (->updated-cache i cache)))))
 
-(defn unrank [n r]
-  [n r 0 0])
+(defn ->k-val [n r]
+  (loop [r r k-val nil answer [n]]
+    (if (-> k-val nil? not) {:result r
+                             :answer (cons k-val answer)}
+        (let [jump? (nil? k-val)
+              k (if jump? r (-' r value))]
+          (recur k
+                 (>= k value)
+                 (if jump? (cons k answer) answer))))))
