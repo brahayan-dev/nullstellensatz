@@ -18,3 +18,6 @@
   (loop [i 2 cache {1 1}]
     (if (> i n) (get cache n)
         (recur (inc i) (->updated-cache i cache)))))
+
+(defn unrank [n r]
+  [n r 0 0])
