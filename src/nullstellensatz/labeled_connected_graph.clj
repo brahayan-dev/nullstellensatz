@@ -4,10 +4,12 @@
    [nullstellensatz.combination :as combination]
    [nullstellensatz.labeled-connected-graph :as connected]))
 
+(defn- count-nodes [k] ((comp int dec pow) 2 k))
+
 (defn- ->term [n k cache]
   (let [first-val (get cache k)
+        label-val (count-nodes k)
         second-val (get cache (-' n k))
-        label-val ((comp int dec pow) 2 k)
         binomial-val (combination/enumerate (-' n 2) (dec k))]
     (*' binomial-val label-val first-val second-val)))
 
@@ -32,13 +34,21 @@
                           (can-update? k) (->cache k)
                           (can-update? p) (->cache p))
           value (->term n k updated-cache)]
-      (if (< r value) {:r r :k k :n n :cache updated-cache}
+      (if (< r value) {:r r :k k :n n :p p :cache updated-cache}
           (recur (inc k) (- r value) updated-cache)))))
 
-(defn- ->tag [{:keys [remainder answer]}]
-  ())
+(defn- ->tag [{:keys [r p k cache] :as answer}]
+  (let [a (get cache k)
+        b (get cache p)
+        c (count-nodes k)]
+    (assoc answer
+           :r (rem r (* a b c))
+           :t (quot r (* a b c)))))
 
-(defn- ->node [{:keys [remainder answer]}]
-  ())
+(defn- ->node [{:keys [n k t p r cache]}]
+  (let [a (get cache k)
+        b (get cache p)
+        value (quot r (* a b))]
+    [n k t value]))
 
 (def unrank (comp ->node ->tag ->location))
