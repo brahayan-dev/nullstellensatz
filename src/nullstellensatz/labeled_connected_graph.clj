@@ -45,10 +45,15 @@
            :r (rem r (* a b c))
            :t (quot r (* a b c)))))
 
-(defn- ->node [{:keys [n k t p r cache]}]
+(defn- ->node [{:keys [k p r cache] :as answer}]
   (let [a (get cache k)
-        b (get cache p)
-        value (quot r (* a b))]
-    [n k t value]))
+        b (get cache p)]
+    (assoc answer
+           :r (rem r (* a b))
+           :v (quot r (* a b)))))
 
-(def unrank (comp ->node ->tag ->location))
+(defn- ->element [{:keys [n k t v r p cache]}]
+  (let [b (get cache p)]
+    [n k t v (quot r b) (rem r b)]))
+
+(def unrank (comp ->element ->node ->tag ->location))

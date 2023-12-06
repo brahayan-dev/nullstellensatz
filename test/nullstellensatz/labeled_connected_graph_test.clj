@@ -13,7 +13,7 @@
   (is (= 26704 (connected/enumerate 6))))
 
 (deftest check-unrank
-  (is (match? [3 1 0 0] (connected/unrank 3 0)))
-  (is (match? [3 2 0 0] (connected/unrank 3 1)))
-  (is (match? [3 2 0 1] (connected/unrank 3 2)))
-  (is (match? [3 2 0 2] (connected/unrank 3 3))))
+  (is (match? [3 1 0 0 0 0] (connected/unrank 3 0)))
+  (is (match? [3 2 0 0 0 0] (connected/unrank 3 1)))
+  (is (match? [3 2 0 1 0 0] (connected/unrank 3 2)))
+  (is (match? [3 2 0 2 0 0] (connected/unrank 3 3))))
