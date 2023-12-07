@@ -53,7 +53,21 @@
            :v (quot r (* a b)))))
 
 (defn- ->element [{:keys [n k t v r p cache]}]
-  (let [b (get cache p)]
-    [n k t v (quot r b) (rem r b)]))
+  (let [a (get cache p)]
+    [n k t v (quot r a) (rem r a)]))
 
 (def unrank (comp ->element ->node ->tag ->location))
+
+(defn unwrap [n r]
+  (loop [cache {[n r] (unrank n r)}]
+    (let [[m k _ _ a b] (get cache [n r])
+          can-push? #(not (contains? cache %))
+          p (- m k)]
+      (if (>= 1 m)
+        (assoc cache [m 0] [m 0 0 0 0 0])
+        (recur (cond-> cache
+                 (can-push? [k a]) (assoc [k a] (unrank k a))
+                 (can-push? [p b]) (assoc [p b] (unrank p b))))))))
+
+(comment
+  (unwrap 4 37))
