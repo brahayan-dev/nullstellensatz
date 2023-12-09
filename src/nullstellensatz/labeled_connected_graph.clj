@@ -56,7 +56,11 @@
   (let [a (get cache p)]
     [n k t v (quot r a) (rem r a)]))
 
-(def unrank (comp ->element ->node ->tag ->location))
+(defn unrank [n r]
+  (case n
+    0 [0 0 0 0 0 0]
+    1 [1 1 0 0 0 0]
+    ((comp ->element ->node ->tag ->location) n r)))
 
 (defn unwrap [n r]
   (loop [cache {[n r] (unrank n r)}]
