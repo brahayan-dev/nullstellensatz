@@ -63,15 +63,15 @@
     ((comp ->element ->node ->tag ->location) n r)))
 
 (defn unwrap [n r]
-  (loop [cache {[n r] (unrank n r)}]
-    (let [[m k _ _ a b] (get cache [n r])
-          can-push? #(not (contains? cache %))
-          p (- m k)]
-      (if (>= 1 m)
-        (assoc cache [m 0] [m 0 0 0 0 0])
-        (recur (cond-> cache
-                 (can-push? [k a]) (assoc [k a] (unrank k a))
-                 (can-push? [p b]) (assoc [p b] (unrank p b))))))))
+  (loop [cache [(unrank n r)]]
+    (let [[a i _ _ p _] (get cache 0)
+          [b j _ _ _ q] (get cache 1)
+          k (- n j)
+          can-push? #(not (contains? cache %))]
+      (if (some #{0 1} [a b]) cache
+          (recur (cond->> cache
+                   (can-push? [i p]) (cons (unrank i p))
+                   (can-push? [k q]) (cons (unrank k q))))))))
 
 (comment
   (unwrap 4 37))
