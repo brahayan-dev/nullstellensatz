@@ -1,6 +1,7 @@
 (ns nullstellensatz.labeled-connected-graph
   (:require
    [clojure.math :refer [pow]]
+   [clojure.set :refer [union]]
    [nullstellensatz.combination :as combination]
    [nullstellensatz.labeled-connected-graph :as connected]))
 
@@ -62,16 +63,14 @@
     1 [1 1 0 0 0 0]
     ((comp ->element ->node ->tag ->location) n r)))
 
-(defn unwrap [n r]
-  (loop [cache [(unrank n r)]]
-    (let [[a i _ _ p _] (get cache 0)
-          [b j _ _ _ q] (get cache 1)
-          k (- n j)
-          can-push? #(not (contains? cache %))]
-      (if (some #{0 1} [a b]) cache
-          (recur (cond->> cache
-                   (can-push? [i p]) (cons (unrank i p))
-                   (can-push? [k q]) (cons (unrank k q))))))))
+;; TODO: can it be optimized?
+(defn- unwrap [n r cache]
+  (let [[_ k _ _ p q :as code] (unrank n r)
+        updated-cache (conj cache code)]
+    (if (#{0 1} n) (apply sorted-set updated-cache)
+        (union
+         (unwrap k p updated-cache)
+         (unwrap (- n k) q updated-cache)))))
 
 (comment
-  (unwrap 4 37))
+  (unwrap 7 43722 #{}))
