@@ -3,7 +3,8 @@
    [clojure.math :refer [pow]]
    [clojure.set :refer [union]]
    [nullstellensatz.combination :as combination]
-   [nullstellensatz.labeled-connected-graph :as connected]))
+   [nullstellensatz.labeled-connected-graph :as connected]
+   [nullstellensatz.subset :as subset]))
 
 (defn- count-nodes [k] ((comp int dec pow) 2 k))
 
@@ -72,5 +73,20 @@
          (unwrap k p updated-cache)
          (unwrap (- n k) q updated-cache)))))
 
-(comment
-  (unwrap 7 43722 #{}))
+(defn- ->connected-elements [cache [n k t v p q]]
+  (let [tags (combination/generate n k t)
+        nodes (subset/generate n v)
+        first-graph (get cache k)
+        second-graph (get cache (- n k))]))
+
+(defn- ->graph [cache item]
+  (let [n (get item 0)
+        object (case n
+                 1 [[1 1]]
+                 2 [[1 2]]
+                 (->connected-elements cache item))]
+    (assoc cache n object)))
+
+(defn generate [n r]
+  (let [codes (unwrap n r #{})]
+    (reduce ->graph {} codes)))

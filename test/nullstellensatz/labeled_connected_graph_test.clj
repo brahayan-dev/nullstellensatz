@@ -37,3 +37,8 @@
 
   (is (match? [7 3 2 2 1 29] (connected/unrank 7 40123)))
   (is (match? [8 4 12 10 4 4] (connected/unrank 8 2927204))))
+
+(deftest check-generate
+  (is (match? [[1 1]] (connected/generate 1 0)))
+  (is (match? [[1 2]] (connected/generate 2 0)))
+  (is (match? [[1 2] [2 3]] (connected/generate 3 0))))
