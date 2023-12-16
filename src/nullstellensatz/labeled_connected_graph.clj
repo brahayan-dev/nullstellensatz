@@ -73,20 +73,38 @@
          (unwrap k p updated-cache)
          (unwrap (- n k) q updated-cache)))))
 
-(defn- ->connected-elements [cache [n k t v p q]]
-  (let [tags (combination/generate n k t)
-        nodes (subset/generate n v)
-        first-graph (get cache k)
-        second-graph (get cache (- n k))]))
+(defn- ->graph-labels [n items]
+  (let [first-tags (->> items (map inc) (cons 1))
+        second-tags (remove #(some #{%} first-tags) (range 1 (inc n)))]
+    [first-tags second-tags]))
+
+(defn- ->labeled-graph [graph tags]
+  tags)
+
+(defn- ->connected-graphs [nodes first-graph second-graph]
+  [])
+
+(defn- ->new-element [cache [n k t v]]
+  (let [p (- n k)
+        n_ (- n 2)
+        k_ (dec k)
+        [first-tags second-tags] (->> t (combination/generate n_ k_) (->graph-labels n))
+        first-graph (->> k (get cache) (->labeled-graph first-tags))
+        second-graph (->> p (get cache) (->labeled-graph second-tags))
+        nodes (subset/generate n v)]
+    (->connected-graphs nodes first-graph second-graph)))
 
 (defn- ->graph [cache item]
   (let [n (get item 0)
         object (case n
                  1 [[1 1]]
                  2 [[1 2]]
-                 (->connected-elements cache item))]
+                 (->new-element cache item))]
     (assoc cache n object)))
 
 (defn generate [n r]
   (let [codes (unwrap n r #{})]
     (reduce ->graph {} codes)))
+
+(comment
+  (generate 2 0))
