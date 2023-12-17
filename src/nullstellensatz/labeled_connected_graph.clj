@@ -79,10 +79,14 @@
     [first-tags second-tags]))
 
 (defn- ->labeled-graph [graph tags]
-  tags)
+  (loop [[_ & g-tail] graph [a b & tail] tags answer []]
+    (if (empty? g-tail) answer
+        (recur g-tail tail
+               (cons [a b] answer)))))
 
-(defn- ->connected-graphs [nodes first-graph second-graph]
-  [])
+(defn- ->connected-graphs [i nodes first-graph second-graph]
+  (let [new-graph (map #(vector i %) nodes)]
+    (concat first-graph second-graph new-graph)))
 
 (defn- ->new-element [cache [n k t v]]
   (let [p (- n k)
@@ -91,8 +95,9 @@
         [first-tags second-tags] (->> t (combination/generate n_ k_) (->graph-labels n))
         first-graph (->> k (get cache) (->labeled-graph first-tags))
         second-graph (->> p (get cache) (->labeled-graph second-tags))
-        nodes (subset/generate n v)]
-    (->connected-graphs nodes first-graph second-graph)))
+        nodes (subset/generate n v)
+        item (last first-tags)]
+    (->connected-graphs item nodes first-graph second-graph)))
 
 (defn- ->graph [cache item]
   (let [n (get item 0)
