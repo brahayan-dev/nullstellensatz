@@ -74,12 +74,13 @@
          (unwrap (- n k) q updated-cache)))))
 
 (defn- ->graph-tags [n items]
+  (println {:i items :n n})
   (let [first-tags (->> items (map inc) (cons 1))
         second-tags (remove #(some #{%} first-tags) (range 1 (inc n)))]
     (map vec [first-tags second-tags])))
 
 (defn- ->labeled-graph [tags graph]
-  (println graph)
+  (println {:g graph :t tags})
   (loop [[_ & g-tail] graph [a b & tail] tags answer []]
     (if (empty? g-tail) answer
         (recur g-tail tail
@@ -99,9 +100,9 @@
         second-graph (->> p (get cache) (->labeled-graph second-tags))
         nodes (->> v_ (subset/generate n) (cons 1) vec)
         item (last first-tags)]
-    (println {:nodes nodes :item item
-              :t1 first-tags :t2 second-tags
-              :g1 first-graph :g2 second-graph})
+    #_(println {:nodes nodes :item item
+                :t1 first-tags :t2 second-tags
+                :g1 first-graph :g2 second-graph})
     (->connected-graphs item nodes first-graph second-graph)))
 
 (defn- ->graph [cache item]
@@ -114,7 +115,7 @@
 
 (defn generate [n r]
   (let [codes (unwrap n r #{})]
-    (reduce ->graph {} codes)))
+    (as-> codes $ (reduce ->graph {} $) (get $ n))))
 
 (comment
   (generate 3 3))
