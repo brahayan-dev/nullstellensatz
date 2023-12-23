@@ -86,7 +86,7 @@
 
 (defn- ->connected-graphs [i nodes first-graph second-graph]
   (let [new-graph (map #(vector i %) nodes)]
-    (concat first-graph second-graph new-graph)))
+    ((comp vec concat) first-graph second-graph new-graph)))
 
 (defn- ->new-element [cache [n k t v]]
   (let [p (- n k)
@@ -112,4 +112,4 @@
     (reduce ->graph {} codes)))
 
 (comment
-  (generate 2 0))
+  (generate 4 1))
