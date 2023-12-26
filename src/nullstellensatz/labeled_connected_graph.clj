@@ -74,64 +74,51 @@
          (unwrap k p updated-cache)
          (unwrap (- n k) q updated-cache)))))
 
-#_(defn- ->graph-tags [n items]
-    (let [first-tags (->> items (map inc) (cons 1))
-          second-tags (remove #(some #{%} first-tags) (range 1 (inc n)))]
-      (println {:i items :n n :t1 first-tags :t2 second-tags})
-      (map vec [first-tags second-tags])))
-
-#_(defn- ->labeled-graph [tags graph]
-    (println {:g graph :t tags})
-    (loop [[_ & g-tail] graph [a b & tail] tags answer []]
-      (if (empty? g-tail) answer
-          (recur g-tail tail
-                 (cons [a b] answer)))))
-
-#_(defn- ->connected-graphs [i nodes first-graph second-graph]
-    (let [new-graph (map #(vector i %) nodes)]
-      ((comp vec concat) first-graph second-graph new-graph)))
-
-#_(defn- load-graph [cache [n k t v]]
-    (let [p (- n k)
-          n_ (- n 2)
-          k_ (dec k)
-          v_ (+ v 2)
-          [first-tags second-tags] (->> t inc (combination/generate n_ k_) (->graph-tags n))
-          first-graph (->> k (get cache) (->labeled-graph first-tags))
-          second-graph (->> p (get cache) (->labeled-graph second-tags))
-          nodes (->> v_ (subset/generate n) (cons 1) vec)
-          item (last first-tags)]
-      (->connected-graphs item nodes first-graph second-graph)))
+(defn- ->named-graph [g tags]
+  (loop [[_ & g-tail :as graph] g [a b & tail] tags answer []]
+    (if (empty? graph) answer
+        (recur g-tail tail
+               ((comp vec cons) [a b] answer)))))
 
 (defn compact [cache [n k t v]]
   (let [n_ (- n 2)
         k_ (dec k)
         first-graph (get cache k)
         second-graph (get cache (- n k))
-        nodes (->> v (+ 2) (subset/generate n) vec)
+        nodes (->> v (+ 2) (subset/generate n))
         tags (->> t inc (combination/generate n_ k_) (map inc) (cons 1) vec)]
     (vector n k tags nodes first-graph second-graph)))
+
+(defn- count-vertexes [nodes]
+  (-> nodes flatten count))
+
+(defn relabel [graph labels]
+  (if (= 1 (count-vertexes graph))
+    (-> labels vec vector)
+    (->named-graph graph labels)))
+
+(defn- assemble [[n _ tags nodes g h]]
+  (let [universe (range 1 (inc n))
+        complements (remove #(some #{%} tags) universe)
+        g_ (relabel g tags)
+        h_ (relabel h complements)
+        arcs (mapv #(vector % n) nodes)]
+    (cond-> []
+      (< 1 (count-vertexes g_)) (concat g_)
+      (< 1 (count-vertexes h_)) (concat h_)
+      true (concat arcs))))
 
 (defn- ->graph [cache item]
   (let [n (get item 0)
         object (case n
                  1 [[1]]
                  2 [[1 2]]
-                 ((comp compact) cache item))]
+                 ((comp vec assemble compact) cache item))]
     (assoc cache n object)))
-
-(defn- debug-log
-  ([x]
-   (debug-log "X" x))
-  ([title x]
-   (let [t (str "|---|" title "|-------------|")]
-     (clojure.pprint/pprint t)
-     (clojure.pprint/pprint x)
-     (clojure.pprint/pprint t) x)))
 
 (defn generate [n r]
   (let [codes (unwrap n r #{})]
-    (as-> codes $ (reduce ->graph {} $) (debug-log $) (get $ n))))
+    (as-> codes $ (reduce ->graph {} $) (get $ n))))
 
 (comment
-  (generate 3 3))
+  (generate 3 2))

@@ -56,10 +56,10 @@
   (is (match? [3 2 [1 2] [2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 1 0 0])))
   (is (match? [3 2 [1 2] [1 2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 2 0 0]))))
 
-#_(deftest check-generate
-    (is (match? [[1 1]] (connected/generate 1 0)))
-    (is (match? [[1 2]] (connected/generate 2 0)))
-    (is (match? [[1 3] [2 3]] (connected/generate 3 0)))
-    (is (match? [[1 2] [1 3]] (connected/generate 3 1)))
-    (is (match? [[1 2] [2 3]] (connected/generate 3 2)))
-    (is (match? [[1 2] [1 3] [2 3]] (connected/generate 3 3))))
+(deftest check-generate
+  (is (match? [[1]] (connected/generate 1 0)))
+  (is (match? [[1 2]] (connected/generate 2 0)))
+  (is (match? [[2 3] [1 3]] (connected/generate 3 0)))
+  (is (match? [[1 2] [1 3]] (connected/generate 3 1)))
+  (is (match? [[1 2] [2 3]] (connected/generate 3 2)))
+  (is (match? [[1 2] [1 3] [2 3]] (connected/generate 3 3))))
