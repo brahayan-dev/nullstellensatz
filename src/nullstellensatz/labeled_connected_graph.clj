@@ -74,18 +74,22 @@
          (unwrap k p updated-cache)
          (unwrap (- n k) q updated-cache)))))
 
-(defn- ->named-graph [g tags]
-  (loop [[_ & g-tail :as graph] g [a b & tail] tags answer []]
-    (if (empty? graph) answer
-        (recur g-tail tail
-               ((comp vec cons) [a b] answer)))))
+(defn- ->named-graph [graph tags]
+  (loop [[head :as g] graph answer []]
+    (println head g tags answer)
+    (if (empty? g) answer
+        (let [->label #(->> head % dec (get tags))
+              a (->label first)
+              b (->label second)]
+          (recur (rest g)
+                 (conj answer [a b]))))))
 
 (defn compact [cache [n k t v]]
   (let [n_ (- n 2)
         k_ (dec k)
         first-graph (get cache k)
         second-graph (get cache (- n k))
-        nodes (->> v (+ 2) (subset/generate n))
+        nodes (->> v (+ 2) (subset/generate n) vec)
         tags (->> t inc (combination/generate n_ k_) (map inc) (cons 1) vec)]
     (vector n k tags nodes first-graph second-graph)))
 
@@ -93,9 +97,10 @@
   (-> nodes flatten count))
 
 (defn relabel [graph labels]
-  (if (= 1 (count-vertexes graph))
-    (-> labels vec vector)
-    (->named-graph graph labels)))
+  (let [labels_ (vec labels)]
+    (if (= 1 (count-vertexes graph))
+      (vector labels_)
+      (->named-graph graph labels_))))
 
 (defn- assemble [[n _ tags nodes g h]]
   (let [universe (range 1 (inc n))
@@ -119,6 +124,3 @@
 (defn generate [n r]
   (let [codes (unwrap n r #{})]
     (as-> codes $ (reduce ->graph {} $) (get $ n))))
-
-(comment
-  (generate 3 2))

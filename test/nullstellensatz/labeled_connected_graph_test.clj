@@ -46,6 +46,12 @@
   (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 1 0 0]} (connected/unwrap 3 2 #{})))
   (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 2 0 0]} (connected/unwrap 3 3 #{}))))
 
+(deftest check-relabel
+  (is (match? [[4]] (connected/relabel [[1]] [4])))
+  (is (match? [[4 5]] (connected/relabel [[1 2]] [4 5])))
+  (is (match? [[4 5] [5 6]] (connected/relabel [[1 2] [2 3]] [4 5 6])))
+  (is (match? [[4 5] [4 6] [5 6]] (connected/relabel [[1 2] [1 3] [2 3]] [4 5 6]))))
+
 (def ^:private cache
   {1 [[1]]
    2 [[1 2]]})
@@ -54,7 +60,10 @@
   (is (match? [3 1 [1] [1] [[1]] [[1 2]]] (connected/compact cache [3 1 0 0 0 0])))
   (is (match? [3 2 [1 2] [1] [[1 2]] [[1]]] (connected/compact cache [3 2 0 0 0 0])))
   (is (match? [3 2 [1 2] [2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 1 0 0])))
-  (is (match? [3 2 [1 2] [1 2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 2 0 0]))))
+  (is (match? [3 2 [1 2] [1 2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 2 0 0])))
+
+  (is (match? [4 1 [1] [1] [[1]] [[1 2] [2 3]]]
+              (connected/compact (assoc cache 3 [[1 2] [2 3]]) [4 1 0 0 0 2]))))
 
 (deftest check-generate
   (is (match? [[1]] (connected/generate 1 0)))
@@ -62,4 +71,11 @@
   (is (match? [[2 3] [1 3]] (connected/generate 3 0)))
   (is (match? [[1 2] [1 3]] (connected/generate 3 1)))
   (is (match? [[1 2] [2 3]] (connected/generate 3 2)))
-  (is (match? [[1 2] [1 3] [2 3]] (connected/generate 3 3))))
+  (is (match? [[1 2] [1 3] [2 3]] (connected/generate 3 3)))
+  (is (match? [[3 4] [2 4] [1 4]] (connected/generate 4 0)))
+  (is (match? [[2 3] [3 4] [1 4]] (connected/generate 4 2)))
+  (is (match? [[1 2] [3 4] [2 4]] (connected/generate 4 5)))
+  (is (match? [[1 3] [2 4] [2 4]] (connected/generate 4 8)))
+  (is (match? [[1 2] [1 3] [2 3] [3 4]] (connected/generate 4 25)))
+  (is (match? [[1 2] [1 3] [2 4] [3 4]] (connected/generate 4 31)))
+  (is (match? [[1 2] [2 3] [1 4] [2 4] [3 4]] (connected/generate 4 36))))
