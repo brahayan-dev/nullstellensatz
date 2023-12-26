@@ -12,6 +12,10 @@
   (is (= 20 (combination/enumerate 6 3))))
 
 (deftest check-generate
+  (is (match? [1] (combination/generate 1 1 1)))
+  (is (match? [1 2] (combination/generate 3 2 1)))
+  (is (match? [1 3] (combination/generate 3 2 2)))
+  (is (match? [2 3] (combination/generate 3 2 3)))
   (is (match? [1 2] (combination/generate 4 2 1)))
   (is (match? [1 3] (combination/generate 4 2 2)))
   (is (match? [2 3] (combination/generate 4 2 3)))

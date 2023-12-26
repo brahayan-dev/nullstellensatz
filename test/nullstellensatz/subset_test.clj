@@ -12,6 +12,10 @@
   (is (= 64 (subset/enumerate 6))))
 
 (deftest check-generate
+  (is (match? [] (subset/generate 2 1)))
+  (is (match? [1] (subset/generate 2 2)))
+  (is (match? [2] (subset/generate 2 3)))
+  (is (match? [1 2] (subset/generate 2 4)))
   (is (match? [] (subset/generate 3 1)))
   (is (match? [1] (subset/generate 3 2)))
   (is (match? [2] (subset/generate 3 3)))

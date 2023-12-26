@@ -38,7 +38,28 @@
   (is (match? [7 3 2 2 1 29] (connected/unrank 7 40123)))
   (is (match? [8 4 12 10 4 4] (connected/unrank 8 2927204))))
 
-(deftest check-generate
-  (is (match? [[1 1]] (connected/generate 1 0)))
-  (is (match? [[1 2]] (connected/generate 2 0)))
-  (is (match? [[1 2] [2 3]] (connected/generate 3 0))))
+(deftest check-unwrap
+  (is (match? #{[1 1 0 0 0 0]} (connected/unwrap 1 0 #{})))
+  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0]} (connected/unwrap 2 0 #{})))
+  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 1 0 0 0 0]} (connected/unwrap 3 0 #{})))
+  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 0 0 0]} (connected/unwrap 3 1 #{})))
+  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 1 0 0]} (connected/unwrap 3 2 #{})))
+  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 2 0 0]} (connected/unwrap 3 3 #{}))))
+
+(def ^:private cache
+  {1 [[1]]
+   2 [[1 2]]})
+
+(deftest check-compact
+  (is (match? [3 1 [1] [1] [[1]] [[1 2]]] (connected/compact cache [3 1 0 0 0 0])))
+  (is (match? [3 2 [1 2] [1] [[1 2]] [[1]]] (connected/compact cache [3 2 0 0 0 0])))
+  (is (match? [3 2 [1 2] [2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 1 0 0])))
+  (is (match? [3 2 [1 2] [1 2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 2 0 0]))))
+
+#_(deftest check-generate
+    (is (match? [[1 1]] (connected/generate 1 0)))
+    (is (match? [[1 2]] (connected/generate 2 0)))
+    (is (match? [[1 3] [2 3]] (connected/generate 3 0)))
+    (is (match? [[1 2] [1 3]] (connected/generate 3 1)))
+    (is (match? [[1 2] [2 3]] (connected/generate 3 2)))
+    (is (match? [[1 2] [1 3] [2 3]] (connected/generate 3 3))))

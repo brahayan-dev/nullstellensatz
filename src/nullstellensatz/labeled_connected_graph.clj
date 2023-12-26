@@ -65,7 +65,8 @@
     ((comp ->element ->node ->tag ->location) n r)))
 
 ;; TODO: can it be optimized?
-(defn- unwrap [n r cache]
+;;       can it be enhanced with atomic DP?
+(defn unwrap [n r cache]
   (let [[_ k _ _ p q :as code] (unrank n r)
         updated-cache (conj cache code)]
     (if (#{0 1} n) (apply sorted-set updated-cache)
@@ -73,43 +74,64 @@
          (unwrap k p updated-cache)
          (unwrap (- n k) q updated-cache)))))
 
-(defn- ->graph-labels [n items]
-  (let [first-tags (->> items (map inc) (cons 1))
-        second-tags (remove #(some #{%} first-tags) (range 1 (inc n)))]
-    [first-tags second-tags]))
+#_(defn- ->graph-tags [n items]
+    (let [first-tags (->> items (map inc) (cons 1))
+          second-tags (remove #(some #{%} first-tags) (range 1 (inc n)))]
+      (println {:i items :n n :t1 first-tags :t2 second-tags})
+      (map vec [first-tags second-tags])))
 
-(defn- ->labeled-graph [graph tags]
-  (loop [[_ & g-tail] graph [a b & tail] tags answer []]
-    (if (empty? g-tail) answer
-        (recur g-tail tail
-               (cons [a b] answer)))))
+#_(defn- ->labeled-graph [tags graph]
+    (println {:g graph :t tags})
+    (loop [[_ & g-tail] graph [a b & tail] tags answer []]
+      (if (empty? g-tail) answer
+          (recur g-tail tail
+                 (cons [a b] answer)))))
 
-(defn- ->connected-graphs [i nodes first-graph second-graph]
-  (let [new-graph (map #(vector i %) nodes)]
-    ((comp vec concat) first-graph second-graph new-graph)))
+#_(defn- ->connected-graphs [i nodes first-graph second-graph]
+    (let [new-graph (map #(vector i %) nodes)]
+      ((comp vec concat) first-graph second-graph new-graph)))
 
-(defn- ->new-element [cache [n k t v]]
-  (let [p (- n k)
-        n_ (- n 2)
+#_(defn- load-graph [cache [n k t v]]
+    (let [p (- n k)
+          n_ (- n 2)
+          k_ (dec k)
+          v_ (+ v 2)
+          [first-tags second-tags] (->> t inc (combination/generate n_ k_) (->graph-tags n))
+          first-graph (->> k (get cache) (->labeled-graph first-tags))
+          second-graph (->> p (get cache) (->labeled-graph second-tags))
+          nodes (->> v_ (subset/generate n) (cons 1) vec)
+          item (last first-tags)]
+      (->connected-graphs item nodes first-graph second-graph)))
+
+(defn compact [cache [n k t v]]
+  (let [n_ (- n 2)
         k_ (dec k)
-        [first-tags second-tags] (->> t (combination/generate n_ k_) (->graph-labels n))
-        first-graph (->> k (get cache) (->labeled-graph first-tags))
-        second-graph (->> p (get cache) (->labeled-graph second-tags))
-        nodes (subset/generate n v)
-        item (last first-tags)]
-    (->connected-graphs item nodes first-graph second-graph)))
+        first-graph (get cache k)
+        second-graph (get cache (- n k))
+        nodes (->> v (+ 2) (subset/generate n) vec)
+        tags (->> t inc (combination/generate n_ k_) (map inc) (cons 1) vec)]
+    (vector n k tags nodes first-graph second-graph)))
 
 (defn- ->graph [cache item]
   (let [n (get item 0)
         object (case n
-                 1 [[1 1]]
+                 1 [[1]]
                  2 [[1 2]]
-                 (->new-element cache item))]
+                 ((comp compact) cache item))]
     (assoc cache n object)))
+
+(defn- debug-log
+  ([x]
+   (debug-log "X" x))
+  ([title x]
+   (let [t (str "|---|" title "|-------------|")]
+     (clojure.pprint/pprint t)
+     (clojure.pprint/pprint x)
+     (clojure.pprint/pprint t) x)))
 
 (defn generate [n r]
   (let [codes (unwrap n r #{})]
-    (reduce ->graph {} codes)))
+    (as-> codes $ (reduce ->graph {} $) (debug-log $) (get $ n))))
 
 (comment
-  (generate 4 1))
+  (generate 3 3))
