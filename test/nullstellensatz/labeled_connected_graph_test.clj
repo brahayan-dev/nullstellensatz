@@ -39,12 +39,12 @@
   (is (match? [8 4 12 10 4 4] (connected/unrank 8 2927204))))
 
 (deftest check-unwrap
-  (is (match? #{[1 1 0 0 0 0]} (connected/unwrap 1 0 #{})))
-  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0]} (connected/unwrap 2 0 #{})))
-  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 1 0 0 0 0]} (connected/unwrap 3 0 #{})))
-  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 0 0 0]} (connected/unwrap 3 1 #{})))
-  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 1 0 0]} (connected/unwrap 3 2 #{})))
-  (is (match? #{[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 2 0 0]} (connected/unwrap 3 3 #{}))))
+  (is (match? [[1 1 0 0 0 0]] (connected/unwrap 1 0)))
+  (is (match? [[1 1 0 0 0 0] [2 1 0 0 0 0]] (connected/unwrap 2 0)))
+  (is (match? [[1 1 0 0 0 0] [2 1 0 0 0 0] [3 1 0 0 0 0]] (connected/unwrap 3 0)))
+  (is (match? [[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 0 0 0]] (connected/unwrap 3 1)))
+  (is (match? [[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 1 0 0]] (connected/unwrap 3 2)))
+  (is (match? [[1 1 0 0 0 0] [2 1 0 0 0 0] [3 2 0 2 0 0]] (connected/unwrap 3 3))))
 
 (deftest check-relabel
   (is (match? [[4]] (connected/relabel [[1]] [4])))

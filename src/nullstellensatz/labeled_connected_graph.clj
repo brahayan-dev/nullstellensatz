@@ -122,5 +122,5 @@
     (assoc cache n object)))
 
 (defn generate [n r]
-  (let [codes (unwrap n r #{})]
+  (let [codes (unwrap n r)]
     (as-> codes $ (reduce ->graph {} $) (get $ n))))
