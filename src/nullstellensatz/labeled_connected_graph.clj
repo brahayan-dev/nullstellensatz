@@ -1,7 +1,6 @@
 (ns nullstellensatz.labeled-connected-graph
   (:require
    [clojure.math :refer [pow]]
-   [clojure.set :refer [union]]
    [nullstellensatz.combination :as combination]
    [nullstellensatz.labeled-connected-graph :as connected]
    [nullstellensatz.subset :as subset]))
@@ -64,19 +63,23 @@
     1 [1 1 0 0 0 0]
     ((comp ->element ->node ->tag ->location) n r)))
 
-;; TODO: can it be optimized?
-;;       can it be enhanced with atomic DP?
-(defn unwrap [n r cache]
-  (let [[_ k _ _ p q :as code] (unrank n r)
-        updated-cache (conj cache code)]
-    (if (#{0 1} n) (apply sorted-set updated-cache)
-        (union
-         (unwrap k p updated-cache)
-         (unwrap (- n k) q updated-cache)))))
+(def ^:private atomic-cache (atom {}))
+
+(defn unwrap [m s]
+  (letfn [(clear-cache [answer] (reset! atomic-cache {}) answer)
+          (->prepared [answer] (-> answer vals sort vec))
+          (->answer  [n r]
+            (if (contains? @atomic-cache [n r]) @atomic-cache
+                (let [[_ k _ _ p q :as code] (unrank n r)
+                      updated-cache (swap! atomic-cache assoc [n r] code)]
+                  (if (#{0 1} n) updated-cache
+                      (merge
+                       (->answer k p)
+                       (->answer (- n k) q))))))]
+    ((comp ->prepared clear-cache ->answer) m s)))
 
 (defn- ->named-graph [graph tags]
   (loop [[head :as g] graph answer []]
-    (println head g tags answer)
     (if (empty? g) answer
         (let [->label #(->> head % dec (get tags))
               a (->label first)
