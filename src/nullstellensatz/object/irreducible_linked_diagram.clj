@@ -1,4 +1,4 @@
-(ns nullstellensatz.irreducible-linked-diagram)
+(ns nullstellensatz.object.irreducible-linked-diagram)
 
 (defrecord Pack [k-value
                  total-value
@@ -52,7 +52,7 @@
                           :else [(+ a k) (+ b k)]))]
     (concat (map ->first-part x) (map ->second-part y))))
 
-(defn ->code [n m]
+(defn unrank [n m]
   (cond
     (= n 1) [0 [0 0] [0 0]] ;; Convention: (1, 0)
     (= n 2) [0 [1 0] [1 0]]
@@ -65,12 +65,13 @@
                 k (:k-value pack)]
             [j [k a] [(- n k) b]])))
 
-(defn ->structure [[j [k a] [p b]]]
-  (if (= 0 (+ j k a p b))
-    [[1 2]]
-    (->add [j
-            (->structure (->code k a))
-            (->structure (->code p b))])))
+(defn generate [n r]
+  (let [[j [k a] [p b]] (unrank n r)]
+    (if (= 0 (+ j k a p b))
+      [[1 2]]
+      (->add [j
+              (generate k a)
+              (generate p b)]))))
 
 (defn enumerate [n]
   (let [packs (generate-packs n)]

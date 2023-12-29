@@ -1,8 +1,8 @@
-(ns nullstellensatz.labeled-connected-graph-test
+(ns nullstellensatz.object.labeled-connected-graph-test
   (:require
    [clojure.test :refer [deftest is]]
    [matcher-combinators.test :refer [match?]]
-   [nullstellensatz.labeled-connected-graph :as connected]))
+   [nullstellensatz.object.labeled-connected-graph :as connected]))
 
 (deftest check-enumerate
   (is (= 1 (connected/enumerate 1)))

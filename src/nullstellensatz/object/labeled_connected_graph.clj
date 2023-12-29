@@ -1,9 +1,9 @@
-(ns nullstellensatz.labeled-connected-graph
+(ns nullstellensatz.object.labeled-connected-graph
   (:require
    [clojure.math :refer [pow]]
-   [nullstellensatz.combination :as combination]
-   [nullstellensatz.labeled-connected-graph :as connected]
-   [nullstellensatz.subset :as subset]))
+   [nullstellensatz.object.combination :as combination]
+   [nullstellensatz.object.labeled-connected-graph :as connected]
+   [nullstellensatz.object.subset :as subset]))
 
 (defn- count-nodes [k] ((comp int dec pow) 2 k))
 
@@ -116,6 +116,7 @@
       (< 1 (count-vertexes h_)) (concat h_)
       true (concat arcs))))
 
+;; TODO: verify a huge case within cache-indexes
 (defn- ->graph [cache item]
   (let [n (get item 0)
         object (case n

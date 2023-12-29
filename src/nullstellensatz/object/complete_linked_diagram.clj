@@ -1,4 +1,4 @@
-(ns nullstellensatz.complete-linked-diagram)
+(ns nullstellensatz.object.complete-linked-diagram)
 
 (defn- generate-odd-numbers [n]
   (range 1 n 2))
@@ -38,15 +38,15 @@
 (defn enumerate [n]
   (reduce *' 1 (-> n (* 2) generate-odd-numbers)))
 
-(defn ->code [nucleotids position]
+(defn unrank [nucleotids position]
   (let [products (-> nucleotids
                      generate-odd-numbers multiply-values rest)]
     (generate-code position products [])))
 
-(defn ->structure [nucleotids position]
+(defn generate [nucleotids position]
   (let [a (range 0 nucleotids 2)
         b (range 1 nucleotids 2)
         pairs (map vector a b)
-        representation (->code nucleotids position)]
+        representation (unrank nucleotids position)]
     ((comp set generate-structure) representation pairs [])))
 

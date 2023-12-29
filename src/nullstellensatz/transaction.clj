@@ -1,58 +1,19 @@
 (ns nullstellensatz.transaction
   (:require
-   [nullstellensatz.complete-linked-diagram :as complete-linked-diagram]
-   [nullstellensatz.irreducible-linked-diagram :as irreducible-linked-diagram]
-   [nullstellensatz.labeled-connected-graph :as labeled-connected-graph]
-   [nullstellensatz.catalan-family :as noncrossing-linked-diagram]
-   [nullstellensatz.set-partition :as set-partition]))
+   [nullstellensatz.object.catalan-family :as noncrossing-linked-diagram]
+   [nullstellensatz.object.complete-linked-diagram :as complete-linked-diagram]
+   [nullstellensatz.object.irreducible-linked-diagram :as irreducible-linked-diagram]
+   [nullstellensatz.object.labeled-connected-graph :as labeled-connected-graph]
+   [nullstellensatz.object.set-partition :as set-partition]))
 
 #_(defn- ->file [name]
     (io/file "data" (str name ".edn")))
 
-#_(defn- load-data [{:keys [options errors] :as input}]
-    (if (empty? errors)
-      (let [data (-> options
-                     :molecule
-                     ->file io/reader
-                     java.io.PushbackReader. edn/read)]
-        (assoc input :data data)) input))
-
-#_(defn- count-elements [{:keys [data errors] :as input}]
-    (if (empty? errors)
-      (let [raw (-> data :secondary (split #""))
-            ->predicate (fn [x] #(= x %))
-            ->quantity-of #(-> % ->predicate (filter raw) count)]
-        (assoc-in input [:data :elements] {:free-points (->quantity-of ".")
-                                           :matching-arcs (->quantity-of "(")
-                                           :crossing-arcs (+
-                                                           (->quantity-of "{")
-                                                           (->quantity-of "["))})) input))
-
-#_(defn- add-matching-size [{:keys [data errors] :as input}]
-    (if (empty? errors)
-      (letfn [(->value [{:keys [matching-arcs crossing-arcs]}]
-                (if (= 0 crossing-arcs) matching-arcs (inc matching-arcs)))]
-        (assoc-in input [:data :matching-size] (-> data :elements ->value))) input))
-
-#_(defn- format [answer]
-    (letfn [(->format [pair] (join "," pair))]
-      (->> answer (map ->format) (join "|") println)))
-
-#_(defn- print-answer [{:keys [errors options data]}]
-    (when (empty? errors)
-      (let [n (:matching-size data)
-            structure (:structure options)]
-        (format
-         (if-not (:irreducible options)
-           (complete/->structure (* 2 n) structure)
-           ((comp irreducible/->structure irreducible/->code) n structure))))))
-
-#_(defn molecule-exists? [name]
-    (-> name ->file .exists))
-
-(defn- print-answer [{:keys [size index errors]}]
-  (when (and (empty? errors) (nil? index))
-    (println size)))
+(defn- print-answer [{:keys [generated size index errors]}]
+  (when (empty? errors)
+    (if (nil? index)
+      (println size)
+      (println generated))))
 
 (defn- print-errors [{:keys [errors] :as input}]
   (when-not (empty? errors)
@@ -69,6 +30,17 @@
                  "s" (irreducible-linked-diagram/enumerate n))]
       (assoc input :size size)) input))
 
+(defn- fetch-object [{:keys [index object space errors] :as input}]
+  (if (and index (empty? errors))
+    (let [n space
+          generated (case object
+                      "b" (set-partition/generate n index)
+                      "g" (labeled-connected-graph/generate n index)
+                      "d" (complete-linked-diagram/generate n index)
+                      "c" (noncrossing-linked-diagram/generate n index)
+                      "s" (irreducible-linked-diagram/generate n index))]
+      (assoc input :generated generated)) input))
+
 (defn- validate-index [{:keys [size index errors] :as input}]
   (if (and index (empty? errors))
     (let [error-msg (str "Failed to validate \"-m " index
@@ -82,6 +54,7 @@
 (def ->output (comp
                print-answer
                print-errors
+               fetch-object
                validate-index
                add-size
                flat-data))

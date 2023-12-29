@@ -1,7 +1,8 @@
-(ns nullstellensatz.combination-test
-  (:require [nullstellensatz.combination :as combination]
-            [matcher-combinators.test :refer [match?]]
-            [clojure.test :refer [deftest is]]))
+(ns nullstellensatz.object.combination-test
+  (:require
+   [clojure.test :refer [deftest is]]
+   [matcher-combinators.test :refer [match?]]
+   [nullstellensatz.object.combination :as combination]))
 
 (deftest check-enumerate
   (is (= 1 (combination/enumerate 0 0)))

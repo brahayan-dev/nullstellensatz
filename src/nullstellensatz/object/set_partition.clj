@@ -1,4 +1,4 @@
-(ns nullstellensatz.set-partition)
+(ns nullstellensatz.object.set-partition)
 
 (defn- ->restricted-growth-row [n i j answer]
   (if (> j (- n i)) answer
@@ -32,7 +32,7 @@
                      (->add (inc j))
                      (->add (inc (quot r d))))))))))
 
-(defn search [n r]
+(defn generate [n r]
   (let [code (unrank n r)
         structure (as-> code $
                     (vals $)

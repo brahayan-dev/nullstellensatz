@@ -1,8 +1,0 @@
-{:molecules 2
- :id "ndb_00026"
- :primary "CGTACGCGTACG"
- :secondary "(((((())))))"
- :origin "RNA SSTRAND database"
- :external-source "Nucleic Acid Database ddf007"
- :observation "The secondary structure annotation was obtained with RNAview"}
-

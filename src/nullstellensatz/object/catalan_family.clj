@@ -1,5 +1,5 @@
-(ns nullstellensatz.catalan-family
-  (:require [nullstellensatz.combination :as combination]))
+(ns nullstellensatz.object.catalan-family
+  (:require [nullstellensatz.object.combination :as combination]))
 
 (defn enumerate [n]
   (let [division-val (/ 1 (inc n))
@@ -27,7 +27,9 @@
 (defn unrank [n i]
   ((comp vec unrank-helper) n i 1 0 0 []))
 
-(defn search-dyck-path [n r]
+(defn generate
+  "It generates a Dyck path"
+  [n r]
   (let [code (unrank n r)]
     (loop [x 1 y 0 answer [[0 0]]]
       (if (> x (* 2 n)) answer

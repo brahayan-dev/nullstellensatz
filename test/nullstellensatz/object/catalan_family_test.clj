@@ -1,8 +1,9 @@
-(ns nullstellensatz.catalan-family-test
+(ns nullstellensatz.object.catalan-family-test
   (:require
    [clojure.test :refer [deftest is]]
    [matcher-combinators.test :refer [match?]]
-   [nullstellensatz.catalan-family :as catalan]))
+   [nullstellensatz.object.catalan-family :as catalan]))
+
 (deftest check-enumerate
   (is (= 1 (catalan/enumerate 0)))
   (is (= 1 (catalan/enumerate 1)))
@@ -36,10 +37,10 @@
   (is (match? [0 1 0 1 0 1] (catalan/unrank 3 4))))
 
 (deftest check-search-dyck-path
-  (is (match? [[0 0] [1 1] [2 2] [3 1] [4 0]] (catalan/search-dyck-path 2 0)))
-  (is (match? [[0 0] [1 1] [2 0] [3 1] [4 0]] (catalan/search-dyck-path 2 1)))
-  (is (match? [[0 0] [1 1] [2 2] [3 3] [4 2] [5 1] [6 0]] (catalan/search-dyck-path 3 0)))
-  (is (match? [[0 0] [1 1] [2 2] [3 1] [4 2] [5 1] [6 0]] (catalan/search-dyck-path 3 1)))
-  (is (match? [[0 0] [1 1] [2 0] [3 1] [4 2] [5 1] [6 0]] (catalan/search-dyck-path 3 2)))
-  (is (match? [[0 0] [1 1] [2 2] [3 1] [4 0] [5 1] [6 0]] (catalan/search-dyck-path 3 3)))
-  (is (match? [[0 0] [1 1] [2 0] [3 1] [4 0] [5 1] [6 0]] (catalan/search-dyck-path 3 4))))
+  (is (match? [[0 0] [1 1] [2 2] [3 1] [4 0]] (catalan/generate 2 0)))
+  (is (match? [[0 0] [1 1] [2 0] [3 1] [4 0]] (catalan/generate 2 1)))
+  (is (match? [[0 0] [1 1] [2 2] [3 3] [4 2] [5 1] [6 0]] (catalan/generate 3 0)))
+  (is (match? [[0 0] [1 1] [2 2] [3 1] [4 2] [5 1] [6 0]] (catalan/generate 3 1)))
+  (is (match? [[0 0] [1 1] [2 0] [3 1] [4 2] [5 1] [6 0]] (catalan/generate 3 2)))
+  (is (match? [[0 0] [1 1] [2 2] [3 1] [4 0] [5 1] [6 0]] (catalan/generate 3 3)))
+  (is (match? [[0 0] [1 1] [2 0] [3 1] [4 0] [5 1] [6 0]] (catalan/generate 3 4))))

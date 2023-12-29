@@ -1,7 +1,0 @@
-{:molecules 3
- :id "ndb_00060"
- :primary "ATATATATATAT"
- :secondary "[[((..]])).."
- :origin "RNA SSTRAND database"
- :external-source "Nucleic Acid Database udd006"
- :observation "The secondary structure annotation was obtained with RNAview"}

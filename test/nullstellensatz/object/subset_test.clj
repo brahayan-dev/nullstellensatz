@@ -1,8 +1,8 @@
-(ns nullstellensatz.subset-test
+(ns nullstellensatz.object.subset-test
   (:require
    [clojure.test :refer [deftest is]]
    [matcher-combinators.test :refer [match?]]
-   [nullstellensatz.subset :as subset]))
+   [nullstellensatz.object.subset :as subset]))
 
 (deftest check-enumerate
   (is (= 4 (subset/enumerate 2)))

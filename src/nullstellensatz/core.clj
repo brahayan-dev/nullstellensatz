@@ -6,7 +6,6 @@
 
 (def cli-options
   [["-n" "--space ZERO OR POSITIVE INTEGER" "Kind of object to be generated or enumerated"
-    :default 0
     :parse-fn #(Long/parseLong %)
     :validate [#(<= 0 %) "Must be a number between 0 and 9223372036854775807"]]
    ["-m" "--index ZERO OR POSITIVE INTEGER" "Structure number ID to create"

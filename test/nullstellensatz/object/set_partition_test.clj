@@ -1,8 +1,8 @@
-(ns nullstellensatz.set-partition-test
+(ns nullstellensatz.object.set-partition-test
   (:require
    [clojure.test :refer [deftest is]]
    [matcher-combinators.test :refer [match?]]
-   [nullstellensatz.set-partition :as set-partition]))
+   [nullstellensatz.object.set-partition :as set-partition]))
 
 (deftest check-enumerate
   (is (= 1 (set-partition/enumerate 0)))
@@ -30,10 +30,10 @@
   (is (match? {1 1 2 2 3 3 4 4} (set-partition/unrank 4 14))))
 
 (deftest check-search
-  (is (match? [[1 2 3]] (set-partition/search 3 0)))
-  (is (match? [[1 2] [3]] (set-partition/search 3 1)))
-  (is (match? [[1 3] [2]] (set-partition/search 3 2)))
-  (is (match? [[1] [2 3]] (set-partition/search 3 3)))
-  (is (match? [[1] [2] [3]] (set-partition/search 3 4)))
-  (is (match? [[1 3 4] [2]] (set-partition/search 4 5)))
-  (is (match? [[1] [2] [3 4]] (set-partition/search 4 13))))
+  (is (match? [[1 2 3]] (set-partition/generate 3 0)))
+  (is (match? [[1 2] [3]] (set-partition/generate 3 1)))
+  (is (match? [[1 3] [2]] (set-partition/generate 3 2)))
+  (is (match? [[1] [2 3]] (set-partition/generate 3 3)))
+  (is (match? [[1] [2] [3]] (set-partition/generate 3 4)))
+  (is (match? [[1 3 4] [2]] (set-partition/generate 4 5)))
+  (is (match? [[1] [2] [3 4]] (set-partition/generate 4 13))))
