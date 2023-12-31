@@ -28,7 +28,7 @@
 
 (defn- ->location [n r]
   (loop [k 1 r r cache {1 1}]
-    (let [p (- n k)
+    (let [p (-' n k)
           can-update? #(not (contains? cache %))
           ->cache (fn [c i] (assoc c i (enumerate i)))
           updated-cache (cond-> cache
@@ -36,22 +36,22 @@
                           (can-update? p) (->cache p))
           value (->term n k updated-cache)]
       (if (< r value) {:r r :k k :n n :p p :cache updated-cache}
-          (recur (inc k) (- r value) updated-cache)))))
+          (recur (inc k) (-' r value) updated-cache)))))
 
 (defn- ->tag [{:keys [r p k cache] :as answer}]
   (let [a (get cache k)
         b (get cache p)
         c (count-nodes k)]
     (assoc answer
-           :r (rem r (* a b c))
-           :t (quot r (* a b c)))))
+           :r (rem r (*' a b c))
+           :t (quot r (*' a b c)))))
 
 (defn- ->node [{:keys [k p r cache] :as answer}]
   (let [a (get cache k)
         b (get cache p)]
     (assoc answer
-           :r (rem r (* a b))
-           :v (quot r (* a b)))))
+           :r (rem r (*' a b))
+           :v (quot r (*' a b)))))
 
 (defn- ->element [{:keys [n k t v r p cache]}]
   (let [a (get cache p)]
@@ -75,7 +75,7 @@
                   (if (#{0 1} n) updated-cache
                       (merge
                        (->answer k p)
-                       (->answer (- n k) q))))))]
+                       (->answer (-' n k) q))))))]
     ((comp ->prepared clear-cache ->answer) m s)))
 
 (defn- ->named-graph [graph tags]
@@ -88,11 +88,11 @@
                  (conj answer [a b]))))))
 
 (defn compact [cache [n k t v]]
-  (let [n_ (- n 2)
+  (let [n_ (-' n 2)
         k_ (dec k)
         first-graph (get cache k)
-        second-graph (get cache (- n k))
-        nodes (->> v (+ 2) (subset/generate n) vec)
+        second-graph (get cache (-' n k))
+        nodes (->> v (+' 2) (subset/generate n) vec)
         tags (->> t inc (combination/generate n_ k_) (map inc) (cons 1) vec)]
     (vector n k tags nodes first-graph second-graph)))
 
