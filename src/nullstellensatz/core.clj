@@ -19,4 +19,4 @@
   (parse-opts args cli-options))
 
 (defn -main [& args]
-  (-> args ->input transaction/->output))
+  (-> args ->input transaction/->output println))

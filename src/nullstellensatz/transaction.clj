@@ -9,15 +9,12 @@
 #_(defn- ->file [name]
     (io/file "data" (str name ".edn")))
 
-(defn- print-answer [{:keys [generated size index errors]}]
-  (when (empty? errors)
-    (if (nil? index)
-      (println size)
-      (println generated))))
+(defn- ->answer [{:keys [generated size index]}]
+  (when size (if index generated size)))
 
-(defn- print-errors [{:keys [errors] :as input}]
+(defn- ->errors [{:keys [errors] :as input}]
   (when-not (empty? errors)
-    (-> errors first println)) input)
+    (first errors)) input)
 
 (defn- add-size [{:keys [space object errors] :as input}]
   (if (empty? errors)
@@ -42,18 +39,17 @@
       (assoc input :generated generated)) input))
 
 (defn- validate-index [{:keys [size index errors] :as input}]
-  (if (and index (empty? errors))
+  (if (and index (> index size) (empty? errors))
     (let [error-msg (str "Failed to validate \"-m " index
                          "\": A structure must be between 0 and " size)]
-      (when (> index size)
-        (assoc input :errors [error-msg]))) input))
+      (assoc input :errors [error-msg])) input))
 
 (defn- flat-data [{:keys [options errors summary]}]
   (assoc options :errors errors :summary summary))
 
 (def ->output (comp
-               print-answer
-               print-errors
+               ->answer
+               ->errors
                fetch-object
                validate-index
                add-size
