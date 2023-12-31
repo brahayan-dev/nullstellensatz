@@ -5,7 +5,7 @@
    [nullstellensatz.object.labeled-connected-graph :as connected]
    [nullstellensatz.object.subset :as subset]))
 
-(defn- count-nodes [k] ((comp bigint dec pow) 2 k))
+(defn- count-nodes [k] ((comp biginteger dec pow) 2 k))
 
 (defn- ->term [n k cache]
   (let [first-val (get cache k)
