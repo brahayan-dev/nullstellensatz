@@ -1,5 +1,6 @@
 {:tasks
- {:requires ([babashka.fs :as fs])
+ {:requires ([babashka.fs :as fs]
+             [babashka.process :refer [shell sh]])
   :init (do
           (def file-name "nulls")
           (def file-jar (str file-name ".jar"))
@@ -16,13 +17,24 @@
                               " "
                               file-name)]
             (shell ->native)))
+
   jar (do
         (shell "lein uberjar")
         (when (fs/exists? file-jar)
           (fs/delete file-jar))
         (fs/move (first (->paths)) (str "./" file-jar)))
+
   get-enumerations-from-one-to-ten (doseq [[object value] (for [object ["d" "c" "s" "b" "g"]
                                                                 value (range 1 11)]
                                                             [object value])]
                                      (shell (str "echo -n " object "-" value ": "))
-                                     (shell (str "./nulls -n " value " -o " object)))}}
+                                     (shell (str "./nulls -n " value " -o " object)))
+
+  generate-g (let [tag (.format (java.time.LocalDateTime/now)
+                                (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd-HH-mm-ss"))]
+               (shell (str "hyperfine "
+                           "--warmup 5 "
+                           "--shell none "
+                           "--export-json ./data/generate-g-" tag ".json "
+                           "--parameter-scan points 1 100 "
+                           "'./nulls -n {points} -o g -m 0'")))}}
