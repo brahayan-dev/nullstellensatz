@@ -28,6 +28,9 @@
           (shell "lein uberjar")
           (shell run-native))
 
+  plot (let [{:keys [path]} (cli/parse-opts *command-line-args* {:spec {:path {:coerce :string}}})]
+         (shell (str "./script/plot.py" " " path)))
+
   enumerate (let [{:keys [object from to warmup]} opts]
               (shell (str "hyperfine "
                           "--warmup " warmup " "
