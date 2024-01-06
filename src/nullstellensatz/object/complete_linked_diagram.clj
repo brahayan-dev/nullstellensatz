@@ -1,20 +1,11 @@
 (ns nullstellensatz.object.complete-linked-diagram)
 
-(defn- generate-odd-numbers [n]
-  (range 1 n 2))
-
-(defn- multiply-values [odd-numbers]
-  (letfn [(->values [[k :as acc] n]
-            (-> k nil? (if 1 k) (*' n) (cons acc)))]
-    (reduce ->values [] odd-numbers)))
-
-(defn- generate-code [p products representation]
-  (cond
-    (empty? products) (cons 0 representation)
-    :else (let [k (first products)
-                x (rem p k)
-                y (quot p k)]
-            (recur x (rest products) (cons y representation)))))
+(defn enumerate [n]
+  (loop [k 1 answer 1]
+    (if (> k n) answer
+        (let [factor (dec (*' 2 k))
+              updated-answer (*' answer factor)]
+          (recur (inc k) updated-answer)))))
 
 (defn- update-structure [[free open] structure]
   (letfn [(->new-structure [pair]
@@ -24,29 +15,38 @@
                    (cons free)) pair))]
     (map (comp set ->new-structure) structure)))
 
-(defn- generate-structure [representation pairs structure]
-  (cond
-    (empty? representation) structure
-    :else (let [open-item (first representation)
-                [free-item close-item] (first pairs)
-                new-pair (set [open-item close-item])
-                new-structure (->> structure
-                                   (update-structure [free-item open-item])
-                                   (cons new-pair))]
-            (recur (rest representation) (rest pairs) new-structure))))
+(defn- ->products [m]
+  (loop [k 1 answer []]
+    (if (= k m) answer
+        (let [k-val (enumerate k)]
+          (recur (inc k) (cons k-val answer))))))
 
-(defn enumerate [n]
-  (reduce *' 1 (-> n (* 2) generate-odd-numbers)))
+(defn- ->code [p products representation]
+  (if (empty? products)
+    (cons 0 representation)
+    (let [k (first products)
+          x (rem p k)
+          y (quot p k)]
+      (recur x (rest products) (cons y representation)))))
 
-(defn unrank [nucleotids position]
-  (let [products (-> nucleotids
-                     generate-odd-numbers multiply-values rest)]
-    (generate-code position products [])))
+(defn unrank [n r]
+  ((comp vec ->code) r (->products n) []))
 
-(defn generate [nucleotids position]
-  (let [a (range 0 nucleotids 2)
-        b (range 1 nucleotids 2)
-        pairs (map vector a b)
-        representation (unrank nucleotids position)]
-    ((comp set generate-structure) representation pairs [])))
+(defn- ->structure [code pairs]
+  (loop [code code pairs pairs answer []]
+    (if (empty? code) answer
+        (let [open-item (first code)
+              [free-item close-item] (first pairs)
+              new-pair #{open-item close-item}
+              structure (->> answer
+                             (update-structure [free-item open-item])
+                             (cons new-pair))]
+          (recur (rest code) (rest pairs) structure)))))
 
+(defn generate [n r]
+  (let [n_ (*' 2 n)
+        a (range 0 n_ 2)
+        b (range 1 n_ 2)
+        code (unrank n r)
+        pairs (mapv vector a b)]
+    ((comp set ->structure) code pairs)))
