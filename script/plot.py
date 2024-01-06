@@ -6,40 +6,37 @@ import matplotlib.pyplot as plt
 
 
 def extract_means(data):
-    return data["mean"]
+    return [record["mean"] for record in data["results"]]
 
 
 def plot(means):
     indexes = list(range(1, len(means) + 1))
 
-    # Graficar la curva de puntos
     plt.figure(figsize=(8, 6))
     plt.plot(indexes, means, marker="o", linestyle="-", color="b")
 
-    # Configuración del gráfico
-    plt.title("Curva de puntos de las medias")
-    plt.xlabel("Índices")
-    plt.ylabel("Valores de las medias")
+    plt.title("Algorithm behavior to generate LCG")
+    plt.xlabel("Points in the graph")
+    plt.ylabel("Time (seconds)")
     plt.grid(True)
 
-    # Mostrar la gráfica
     plt.show()
 
 
-def load_json(file):
-    with open("../data/" + +file, "r") as file:
-        return json.load(file)
+def load_json(path_to_file):
+    with open(path_to_file, "r") as path_to_file:
+        return json.load(path_to_file)
 
 
-def main(arg):
-    data = load_json(arg)
+def main(path):
+    data = load_json(path)
     means = extract_means(data)
     plot(means)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ejemplo de pasar un argumento a main")
-    parser.add_argument("arg", type=str, help="Argumento a pasar a la función main()")
+    parser = argparse.ArgumentParser(description="Object path to plot")
+    parser.add_argument("path", type=str)
 
     args = parser.parse_args()
-    main(args.arg)
+    main(args.path)
