@@ -1,40 +1,37 @@
 {:tasks
  {:requires ([babashka.fs :as fs]
-             [babashka.process :refer [shell sh]])
+             [babashka.cli :as cli]
+             [babashka.process :refer [shell]])
+
   :init (do
-          (def file-name "nulls")
-          (def file-jar (str file-name ".jar"))
-          (defn ->paths [] (fs/glob "./target/uberjar" "*-standalone.jar")))
-  build (do
-          (shell "lein uberjar")
-          (when (fs/exists? file-name)
-            (fs/delete file-name))
-          (let [->native (str "native-image -jar "
+          (def opts (let [spec {:to {:default 10 :coerce :long}
+                                :from {:default 1 :coerce :long}
+                                :index {:default 0 :coerce :long}
+                                :warmup {:default 5 :coerce :long}
+                                :object {:default "g" :coerce :string}}]
+                      (cli/parse-opts *command-line-args* {:spec spec})))
+          (def tag (.format (java.time.LocalDateTime/now)
+                            (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd-HH-mm-ss"))))
+
+  build (let [file-name "nulls"
+              file-jar (str file-name ".jar")
+              ->paths (fn [] (fs/glob "./target/uberjar" "*-standalone.jar"))
+              run-native (str "native-image -jar "
                               (first (->paths))
                               " --no-server"
                               " --no-fallback"
                               " --features=clj_easy.graal_build_time.InitClojureClasses"
                               " "
                               file-name)]
-            (shell ->native)))
+          (when (fs/exists? file-name)
+            (fs/delete file-name))
+          (shell "lein uberjar")
+          (shell run-native))
 
-  jar (do
-        (shell "lein uberjar")
-        (when (fs/exists? file-jar)
-          (fs/delete file-jar))
-        (fs/move (first (->paths)) (str "./" file-jar)))
-
-  get-enumerations-from-one-to-ten (doseq [[object value] (for [object ["d" "c" "s" "b" "g"]
-                                                                value (range 1 11)]
-                                                            [object value])]
-                                     (shell (str "echo -n " object "-" value ": "))
-                                     (shell (str "./nulls -n " value " -o " object)))
-
-  generate-g (let [tag (.format (java.time.LocalDateTime/now)
-                                (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd-HH-mm-ss"))]
-               (shell (str "hyperfine "
-                           "--warmup 5 "
-                           "--shell none "
-                           "--export-json ./data/generate-g-" tag ".json "
-                           "--parameter-scan points 1 100 "
-                           "'./nulls -n {points} -o g -m 0'")))}}
+  generate (let [{:keys [object from to index warmup]} opts]
+             (shell (str "hyperfine "
+                         "--warmup " warmup " "
+                         "--shell none "
+                         "--export-json ./data/generate-" from object to "-" tag ".json "
+                         "--parameter-scan points " from " " to " "
+                         "'./nulls -n {points} -o " object " -m " index "'")))}}
