@@ -28,6 +28,14 @@
           (shell "lein uberjar")
           (shell run-native))
 
+  enumerate (let [{:keys [object from to warmup]} opts]
+              (shell (str "hyperfine "
+                          "--warmup " warmup " "
+                          "--shell none "
+                          "--export-json ./data/enumerate-" from object to "-" tag ".json "
+                          "--parameter-scan points " from " " to " "
+                          "'./nulls -n {points} -o " object "'")))
+
   generate (let [{:keys [object from to index warmup]} opts]
              (shell (str "hyperfine "
                          "--warmup " warmup " "
