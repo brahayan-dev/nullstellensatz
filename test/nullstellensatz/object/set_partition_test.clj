@@ -29,7 +29,7 @@
   (is (match? {1 1 2 2 3 3 4 3} (set-partition/unrank 4 13)))
   (is (match? {1 1 2 2 3 3 4 4} (set-partition/unrank 4 14))))
 
-(deftest check-search
+(deftest check-generate
   (is (match? [[1 2 3]] (set-partition/generate 3 0)))
   (is (match? [[1 2] [3]] (set-partition/generate 3 1)))
   (is (match? [[1 3] [2]] (set-partition/generate 3 2)))

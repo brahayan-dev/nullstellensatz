@@ -36,7 +36,7 @@
   (is (match? [0 0 1 1 0 1] (catalan/unrank 3 3)))
   (is (match? [0 1 0 1 0 1] (catalan/unrank 3 4))))
 
-(deftest check-search-dyck-path
+(deftest check-generate-dyck-path
   (is (match? [[0 0] [1 1] [2 2] [3 1] [4 0]] (catalan/generate 2 0)))
   (is (match? [[0 0] [1 1] [2 0] [3 1] [4 0]] (catalan/generate 2 1)))
   (is (match? [[0 0] [1 1] [2 2] [3 3] [4 2] [5 1] [6 0]] (catalan/generate 3 0)))
