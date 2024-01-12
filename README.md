@@ -10,7 +10,7 @@ This project uses [GraalVM](https://www.graalvm.org/latest/docs/getting-started/
 
 FIXME: explanation
 
-    $ ./nullstellensatz [args]
+    $ ./nulls [args]
 
 ### Options
 
