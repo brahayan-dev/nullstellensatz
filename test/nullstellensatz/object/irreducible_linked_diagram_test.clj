@@ -4,13 +4,14 @@
    [nullstellensatz.object.irreducible-linked-diagram :as irreducible]))
 
 (deftest check-unrank
-  (is (= [0 [1 0] [2 0]] (irreducible/unrank 3 0)))
-  (is (= [0 [2 0] [1 0]] (irreducible/unrank 3 1)))
-  (is (= [1 [2 0] [1 0]] (irreducible/unrank 3 2)))
-  (is (= [2 [2 0] [1 0]] (irreducible/unrank 3 3)))
-  (is (= [0 [3 1] [2 0]] (irreducible/unrank 5 40)))
-  (is (= [3 [3 1] [3 2]] (irreducible/unrank 6 383)))
-  (is (= [3 [3 2] [4 20]] (irreducible/unrank 7 3972))))
+  (is (= [2 0 1 0 1 0] (irreducible/unrank 2 0)))
+  (is (= [3 0 1 0 2 0] (irreducible/unrank 3 0)))
+  (is (= [3 0 2 0 1 0] (irreducible/unrank 3 1)))
+  (is (= [3 1 2 0 1 0] (irreducible/unrank 3 2)))
+  (is (= [3 2 2 0 1 0] (irreducible/unrank 3 3)))
+  (is (= [5 0 3 1 2 0] (irreducible/unrank 5 40)))
+  (is (= [6 3 3 1 3 2] (irreducible/unrank 6 383)))
+  (is (= [7 3 3 2 4 20] (irreducible/unrank 7 3972))))
 
 (deftest check-enumerate
   (is (= 1 (irreducible/enumerate 1)))

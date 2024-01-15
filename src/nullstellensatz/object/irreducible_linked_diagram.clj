@@ -52,26 +52,18 @@
                           :else [(+ a k) (+ b k)]))]
     (concat (map ->first-part x) (map ->second-part y))))
 
-(defn unrank [n m]
-  (cond
-    (= n 1) [0 [0 0] [0 0]] ;; Convention: (1, 0)
-    (= n 2) [0 [1 0] [1 0]]
-    :else (let [packs (generate-packs n)
-                [x pack] (select-pack packs m)
-                [j a b] (find-positions
-                         [x
-                          (:first-s-value pack)
-                          (:second-s-value pack)])
-                k (:k-value pack)]
-            [j [k a] [(- n k) b]])))
-
-(defn generate [n r]
-  (let [[j [k a] [p b]] (unrank n r)]
-    (if (= 0 (+' j k a p b))
-      [[1 2]]
-      (->add [j
-              (generate k a)
-              (generate p b)]))))
+#_(defn unrank [n m]
+    (cond
+      (= n 1) [0 [0 0] [0 0]] ;; Convention: (1, 0)
+      (= n 2) [0 [1 0] [1 0]]
+      :else (let [packs (generate-packs n)
+                  [x pack] (select-pack packs m)
+                  [j a b] (find-positions
+                           [x
+                            (:first-s-value pack)
+                            (:second-s-value pack)])
+                  k (:k-value pack)]
+              [j [k a] [(- n k) b]])))
 
 (defn- ->term [n k cache]
   (let [first-val (get cache k)
@@ -90,3 +82,41 @@
   (loop [i 3 cache {1 1 2 1}]
     (if (> i n) (get cache n)
         (recur (inc i) (->updated-cache i cache)))))
+
+(defn- ->location [n r]
+  (loop [k 1 r r cache {1 1}]
+    (let [p (-' n k)
+          can-update? #(not (contains? cache %))
+          ->cache (fn [c i] (assoc c i (enumerate i)))
+          updated-cache (cond-> cache
+                          (can-update? k) (->cache k)
+                          (can-update? p) (->cache p))
+          value (->term n k updated-cache)]
+      (if (< r value) {:r r :k k :n n :p p :cache updated-cache}
+          (recur (inc k) (-' r value) updated-cache)))))
+
+(defn- ->index [{:keys [r p k cache] :as answer}]
+  (let [a (get cache k)
+        b (get cache p)]
+    (assoc answer
+           :r (rem r (*' a b))
+           :t (quot r (*' a b)))))
+
+(defn- ->element [{:keys [n k j p cache]}]
+  (let [a (get cache p)
+        b 1]
+    (vector n j k a p b)))
+
+(defn unrank [n r]
+  (case n
+    1 [1 0 0 0 0 0]
+    2 [2 0 1 0 1 0]
+    ((comp ->element ->index ->location) n r)))
+
+(defn generate [n r]
+  (let [[_ j k a p b] (unrank n r)]
+    (if (= 0 (+' j k a p b))
+      [[1 2]]
+      (->add [j
+              (generate k a)
+              (generate p b)]))))
