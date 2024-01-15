@@ -67,12 +67,26 @@
 
 (defn generate [n r]
   (let [[j [k a] [p b]] (unrank n r)]
-    (if (= 0 (+ j k a p b))
+    (if (= 0 (+' j k a p b))
       [[1 2]]
       (->add [j
               (generate k a)
               (generate p b)]))))
 
+(defn- ->term [n k cache]
+  (let [first-val (get cache k)
+        index-val (dec (*' k 2))
+        second-val (get cache (-' n k))]
+    (*' index-val first-val second-val)))
+
+(defn ->updated-cache [i cache]
+  (loop [k 1 answer []]
+    (if (> k (dec i))
+      (assoc cache i (apply +' answer))
+      (let [value (->term i k cache)]
+        (recur (inc k) (cons value answer))))))
+
 (defn enumerate [n]
-  (let [packs (generate-packs n)]
-    (->> packs (map :total-value) (apply +'))))
+  (loop [i 3 cache {1 1 2 1}]
+    (if (> i n) (get cache n)
+        (recur (inc i) (->updated-cache i cache)))))
