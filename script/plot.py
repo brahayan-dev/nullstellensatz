@@ -23,7 +23,7 @@ def get_labels(object_type):
 def plot(means, object_type, algorithm_type):
     indexes = list(range(1, len(means) + 1))
     name_label, x_label = get_labels(object_type)
-    estimations = [1.98 - (0.03 * x) + (0.000086 * (x**2)) for x in indexes]
+    estimations = [x for x in indexes]
 
     plt.figure(figsize=(8, 6))
     plt.plot(indexes, means, ".", color="#ff3399")
