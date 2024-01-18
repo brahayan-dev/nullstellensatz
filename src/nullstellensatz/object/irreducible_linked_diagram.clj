@@ -67,10 +67,29 @@
     2 [2 1 0 0 0]
     ((comp ->element ->slot ->location) n r)))
 
+;; FIXME: What happen when k > 2|x| - 2?
+(defn ->add [k_ x-code y-code]
+  (let [k (inc k_)
+        x-size (* 2 (count x-code))
+        y-size (dec (* 2 (count y-code)))
+        full-size (+ x-size y-size 1)
+        ->first-part (fn [[a b]]
+                       (cond
+                         (and (> a k) (> b k)) [(+ a y-size) (+ b y-size)]
+                         (> a k) [(+ a y-size) b]
+                         (> b k) [a (+ b y-size)]
+                         :else [a b]))
+        ->second-part (fn [[a b]]
+                        (cond
+                          (= (+ b x-size) full-size) [(+ a k) (+ b x-size)]
+                          :else [(+ a k) (+ b k)]))]
+    (concat (map ->first-part x-code) (map ->second-part y-code))))
+
 (defn generate [n r]
-  (let [[_ j k a p b] (unrank n r)]
-    (if (= 0 (+' j k a p b))
+  (let [[_ k j a b] (unrank n r)
+        p (- n k)]
+    (if (= n 1)
       [[1 2]]
-      (->add [j
-              (generate k a)
-              (generate p b)]))))
+      (->add j
+             (generate k a)
+             (generate p b)))))
