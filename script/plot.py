@@ -20,20 +20,25 @@ def get_labels(object_type):
     }[object_type]
 
 
+def show_curve_for_ge(indexes, object_type, algorithm_type):
+    if object_type == "g" and algorithm_type == "eumeration":
+        estimations = [x for x in indexes]
+        plt.plot(indexes, estimations, ".", color="#3cb31e")
+
+
 def plot(means, object_type, algorithm_type):
     indexes = list(range(1, len(means) + 1))
     name_label, x_label = get_labels(object_type)
-    estimations = [x for x in indexes]
 
     plt.figure(figsize=(8, 6))
     plt.plot(indexes, means, ".", color="#ff3399")
-    plt.plot(indexes, estimations, ".", color="#3cb31e")
 
     plt.title("Algorithm behavior to " + algorithm_type + " " + name_label)
     plt.xlabel(x_label)
     plt.ylabel("Time (seconds)")
     plt.grid(True, color="#e0e0e0", linestyle="--", linewidth=1)
 
+    show_curve_for_ge(indexes, object_type, algorithm_type)
     plt.show()
 
 
