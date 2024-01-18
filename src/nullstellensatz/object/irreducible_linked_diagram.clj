@@ -1,23 +1,5 @@
 (ns nullstellensatz.object.irreducible-linked-diagram)
 
-;; FIXME: What happen when k > 2|x| - 2?
-(defn ->add [[k_ x y]]
-  (let [k (inc k_)
-        size-x (* 2 (count x))
-        size-y (dec (* 2 (count y)))
-        full-size (+ size-x size-y 1)
-        ->first-part (fn [[a b]]
-                       (cond
-                         (and (> a k) (> b k)) [(+ a size-y) (+ b size-y)]
-                         (> a k) [(+ a size-y) b]
-                         (> b k) [a (+ b size-y)]
-                         :else [a b]))
-        ->second-part (fn [[a b]]
-                        (cond
-                          (= (+ b size-x) full-size) [(+ a k) (+ b size-x)]
-                          :else [(+ a k) (+ b k)]))]
-    (concat (map ->first-part x) (map ->second-part y))))
-
 (defn- ->term [n k cache]
   (let [first-val (get cache k)
         index-val (dec (*' k 2))

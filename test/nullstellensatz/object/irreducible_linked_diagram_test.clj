@@ -1,17 +1,18 @@
 (ns nullstellensatz.object.irreducible-linked-diagram-test
   (:require
    [clojure.test :refer [deftest is]]
+   [matcher-combinators.test :refer [match?]]
    [nullstellensatz.object.irreducible-linked-diagram :as irreducible]))
 
 (deftest check-unrank
-  (is (= [2 1 0 0 0] (irreducible/unrank 2 0)))
-  (is (= [3 1 0 0 0] (irreducible/unrank 3 0)))
-  (is (= [3 2 0 0 0] (irreducible/unrank 3 1)))
-  (is (= [3 2 1 0 0] (irreducible/unrank 3 2)))
-  (is (= [3 2 2 0 0] (irreducible/unrank 3 3)))
-  (is (= [5 3 0 1 0] (irreducible/unrank 5 40)))
-  (is (= [6 3 3 1 2] (irreducible/unrank 6 383)))
-  (is (= [7 3 3 2 20] (irreducible/unrank 7 3972))))
+  (is (match? [2 1 0 0 0] (irreducible/unrank 2 0)))
+  (is (match? [3 1 0 0 0] (irreducible/unrank 3 0)))
+  (is (match? [3 2 0 0 0] (irreducible/unrank 3 1)))
+  (is (match? [3 2 1 0 0] (irreducible/unrank 3 2)))
+  (is (match? [3 2 2 0 0] (irreducible/unrank 3 3)))
+  (is (match? [5 3 0 1 0] (irreducible/unrank 5 40)))
+  (is (match? [6 3 3 1 2] (irreducible/unrank 6 383)))
+  (is (match? [7 3 3 2 20] (irreducible/unrank 7 3972))))
 
 (deftest check-enumerate
   (is (= 1 (irreducible/enumerate 1)))
