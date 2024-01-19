@@ -12,7 +12,9 @@ def extract_means(data):
 
 def get_labels(object_type):
     return {
+        "a": ("Subsets", "Items in the set"),
         "c": ("Dyck Paths", "Nodes in the path"),
+        "f": ("Combinations", "Items in the set"),
         "b": ("Set Partitions", "Items in the set"),
         "d": ("Complete Linked Diagrams", "Arcs in the diagram"),
         "g": ("Labeled Connected Graphs", "Points in the graph"),

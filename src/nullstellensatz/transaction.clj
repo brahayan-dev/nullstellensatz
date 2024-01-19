@@ -34,7 +34,7 @@
     (let [n space
           k fixed-size
           generated (case object
-                      "a" (subset/generate n)
+                      "a" (subset/generate n index)
                       "f" (combination/generate n k index)
                       "b" (set-partition/generate n index)
                       "g" (labeled-connected-graph/generate n index)

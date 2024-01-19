@@ -14,4 +14,23 @@
                      :object "g"} ->input ->output)))
   (is (match? [[1 2]] (-> {:space 2
                            :index 0
-                           :object "g"} ->input ->output))))
+                           :object "g"} ->input ->output)))
+  (is (match? 8 (-> {:space 3
+                     :object "a"} ->input ->output)))
+  (is (match? [1 3] (-> {:space 3
+                         :index 6
+                         :object "a"} ->input ->output)))
+  (is (match? 3 (-> {:space 3
+                     :fixed-size 2
+                     :object "f"} ->input ->output)))
+  (is (match? 3 (-> {:space 3
+                     :fixed-size 1
+                     :object "f"} ->input ->output)))
+  (is (match? [4] (-> {:space 4
+                       :index 4
+                       :fixed-size 1
+                       :object "f"} ->input ->output)))
+  (is (match? [2] (-> {:space 2
+                       :index 2
+                       :fixed-size 1
+                       :object "f"} ->input ->output))))
