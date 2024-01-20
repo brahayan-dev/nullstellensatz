@@ -2,7 +2,6 @@
   (:require
    [clojure.math :refer [pow round]]
    [nullstellensatz.object.combination :as combination]
-   [nullstellensatz.object.labeled-connected-graph :as connected]
    [nullstellensatz.object.subset :as subset]))
 
 (defn- count-nodes [k] ((comp dec round pow) 2 k))
