@@ -6,6 +6,7 @@
   :init (do
           (def opts (let [spec {:to {:default 10 :coerce :long}
                                 :from {:default 1 :coerce :long}
+                                :runs {:default 10 :coerce :long}
                                 :index {:default 0 :coerce :long}
                                 :warmup {:default 5 :coerce :long}
                                 :object {:default "g" :coerce :string}}]
@@ -31,18 +32,20 @@
   plot (let [{:keys [path]} (cli/parse-opts *command-line-args* {:spec {:path {:coerce :string}}})]
          (shell (str "./script/plot.py" " " path)))
 
-  enumerate (let [{:keys [object from to warmup]} opts]
+  enumerate (let [{:keys [runs object from to warmup]} opts]
               (shell (str "hyperfine "
                           "--warmup " warmup " "
                           "--shell none "
+                          "--runs " runs " "
                           "--export-json ./data/enumerate-" from object to "-" tag ".json "
                           "--parameter-scan points " from " " to " "
                           "'./nulls -n {points} -o " object "'")))
 
-  generate (let [{:keys [object from to index warmup]} opts]
+  generate (let [{:keys [object from to index warmup runs]} opts]
              (shell (str "hyperfine "
                          "--warmup " warmup " "
                          "--shell none "
+                         "--runs " runs " "
                          "--export-json ./data/generate-" from object to "-" tag ".json "
                          "--parameter-scan points " from " " to " "
                          "'./nulls -n {points} -o " object " -m " index "'")))}}

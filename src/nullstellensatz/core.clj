@@ -12,7 +12,7 @@
     :parse-fn #(Long/parseLong %)
     :validate [#(<= 0 %) "Must be a number between 0 and 9223372036854775807"]]
    ["-k" "--fixed-size ZERO OR POSITIVE INTEGER" "Fixed size of subset to be generated or enumerated in combinations (f)"
-    :default 0
+    :default 1
     :parse-fn #(Long/parseLong %)
     :validate [#(<= 0 %) "Must be a number between 0 and 9223372036854775807"]]
    ["-o" "--object ONE OPTION OF: 'a', 'f', 'b', 'c', 'd', 'g' or 's'" "Type of object to be generated or enumerated"
