@@ -4,32 +4,35 @@
    [nullstellensatz.object.combination :as combination]
    [nullstellensatz.object.subset :as subset]))
 
-(defn- count-nodes [k] ((comp dec round pow) 2 k))
+(defn- count-nodes ^Long [^Long k]
+  ((comp dec round pow) 2 k))
 
-(defn- ->term [n k cache]
+(defn- ->term ^Long
+  [^Long n ^Long k ^clojure.lang.ITransientCollection cache]
   (let [first-val (get cache k)
         label-val (count-nodes k)
         second-val (get cache (-' n k))
         binomial-val (combination/enumerate (-' n 2) (dec k))]
     (*' binomial-val label-val first-val second-val)))
 
-(defn- ->updated-cache [i cache]
-  (loop [k 1 answer []]
+(defn- ->updated-cache ^clojure.lang.ITransientCollection
+  [^Long i ^clojure.lang.ITransientCollection cache]
+  (loop [k 1 acc 0]
     (if (> k (dec i))
-      (assoc cache i (apply +' answer))
+      (assoc! cache i acc)
       (let [value (->term i k cache)]
-        (recur (inc k) (cons value answer))))))
+        (recur (inc k) (+' acc value))))))
 
-(defn enumerate [n]
-  (loop [i 2 cache {1 1}]
+(defn enumerate ^Long [^Long n]
+  (loop [i 2 cache (transient {1 1})]
     (if (> i n) (get cache n)
         (recur (inc i) (->updated-cache i cache)))))
 
 (defn- ->location [n r]
-  (loop [k 1 r r cache {1 1}]
+  (loop [k 1 r r cache (transient {1 1})]
     (let [p (-' n k)
           can-update? #(not (contains? cache %))
-          ->cache (fn [c i] (assoc c i (enumerate i)))
+          ->cache (fn [c i] (assoc! c i (enumerate i)))
           updated-cache (cond-> cache
                           (can-update? k) (->cache k)
                           (can-update? p) (->cache p))
