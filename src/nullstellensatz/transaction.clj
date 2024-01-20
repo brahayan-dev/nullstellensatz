@@ -49,12 +49,6 @@
                          "\": A structure must be between 0 and " size)]
       (assoc input :errors [error-msg])) input))
 
-(defn- validate-fixed-size [{:keys [size index errors fixed-size] :as input}]
-  (if (and fixed-size (> fixed-size size) (empty? errors))
-    (let [error-msg (str "Failed to validate \"-k " index
-                         "\": A fixed k-subset must be between 0 and " size)]
-      (assoc input :errors [error-msg])) input))
-
 (defn- flat-data [{:keys [options errors summary]}]
   (assoc options :errors errors :summary summary))
 
@@ -63,6 +57,5 @@
                ->errors
                fetch-object
                validate-index
-               validate-fixed-size
                add-size
                flat-data))
