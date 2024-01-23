@@ -9,5 +9,5 @@
               size (enumerate n_)
               jump? (< size m)]
           (recur n_
-                 (if jump? (- m size) m)
+                 (if jump? (-' m size) m)
                  (if jump? (cons n answer) answer))))))

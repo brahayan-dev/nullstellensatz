@@ -1,9 +1,9 @@
 (ns nullstellensatz.object.set-partition)
 
 (defn- ->restricted-growth-row [n i j answer]
-  (if (> j (- n i)) answer
-      (let [value (+ (get-in answer [(dec i) (inc j)])
-                     (* j (get-in answer [(dec i) j])))]
+  (if (> j (-' n i)) answer
+      (let [value (+' (get-in answer [(dec i) (inc j)])
+                      (*' j (get-in answer [(dec i) j])))]
         (recur n i
                (inc j)
                (-> answer (assoc-in [i j] value))))))
@@ -22,12 +22,12 @@
   (let [table (->restricted-growth-table n)]
     (loop [i 2 j 1 r r answer {1 1}]
       (if (> i n) answer
-          (let [d (get-in table [(- n i) j])
-                jump? (>= r (* j d))
+          (let [d (get-in table [(-' n i) j])
+                jump? (>= r (*' j d))
                 ->add #(assoc answer i %)]
             (recur (inc i)
                    (if jump? (inc j) j)
-                   (if jump? (- r (* j d)) (mod r d))
+                   (if jump? (-' r (*' j d)) (mod r d))
                    (if jump?
                      (->add (inc j))
                      (->add (inc (quot r d))))))))))

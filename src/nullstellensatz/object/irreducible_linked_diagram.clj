@@ -52,24 +52,24 @@
 ;; FIXME: What happen when k > 2|x| - 2?
 (defn ->add [k_ x-code y-code]
   (let [k (inc k_)
-        x-size (* 2 (count x-code))
-        y-size (dec (* 2 (count y-code)))
-        full-size (+ x-size y-size 1)
+        x-size (*' 2 (count x-code))
+        y-size (dec (*' 2 (count y-code)))
+        full-size (+' x-size y-size 1)
         ->first-part (fn [[a b]]
                        (cond
-                         (and (> a k) (> b k)) [(+ a y-size) (+ b y-size)]
-                         (> a k) [(+ a y-size) b]
-                         (> b k) [a (+ b y-size)]
+                         (and (> a k) (> b k)) [(+' a y-size) (+' b y-size)]
+                         (> a k) [(+' a y-size) b]
+                         (> b k) [a (+' b y-size)]
                          :else [a b]))
         ->second-part (fn [[a b]]
                         (cond
-                          (= (+ b x-size) full-size) [(+ a k) (+ b x-size)]
-                          :else [(+ a k) (+ b k)]))]
+                          (= (+ b x-size) full-size) [(+' a k) (+' b x-size)]
+                          :else [(+' a k) (+' b k)]))]
     (concat (map ->first-part x-code) (map ->second-part y-code))))
 
 (defn generate [n r]
   (let [[_ k j a b] (unrank n r)
-        p (- n k)]
+        p (-' n k)]
     (if (= n 1)
       [[1 2]]
       (->add j

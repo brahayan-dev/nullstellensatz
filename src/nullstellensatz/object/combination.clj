@@ -16,7 +16,7 @@
             p-val (rising-factorial n k)]
         (quot p-val k-val))))
 
-(defn generate ^Long [^Long n ^Long k ^Long i]
+(defn generate [^Long n ^Long k ^Long i]
   (loop [n n k k index i answer []]
     (if (or (zero? n) (zero? k)) (vec answer)
         (let [n_ (dec n)
