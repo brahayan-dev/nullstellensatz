@@ -41,4 +41,4 @@
          (shell (str "./script/plot.py" " " path)))
 
   enumerate (->processed opts "")
-  generate (->processed opts " -r ")}}
+  generate (->processed opts " -m 0 -r ")}}
