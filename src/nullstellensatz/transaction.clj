@@ -29,12 +29,12 @@
                  "s" (irreducible-linked-diagram/enumerate n))]
       (assoc input :size size)) input))
 
-(defn- fetch-object [{:keys [size fixed-size index object space errors is-randomized] :as input}]
+(defn- fetch-object [{:keys [fixed-size index object space errors is-randomized] :as input}]
   (if (and (or is-randomized index) (empty? errors))
     (let [n space
           k fixed-size
           selected-index (if is-randomized
-                           (-> size rand-int) index)
+                           (-> n rand bigint) index)
           generated (case object
                       "a" (subset/generate n selected-index)
                       "f" (combination/generate n k selected-index)
