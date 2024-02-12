@@ -17,6 +17,7 @@
     :validate [#(<= 0 %) "Must be a number between 0 and 9223372036854775807"]]
    ["-o" "--object ONE OPTION OF: 'a', 'f', 'b', 'c', 'd', 'g' or 's'" "Type of object to be generated or enumerated"
     :validate [#(some #{%} ["a" "f" "b" "c" "d" "g" "s"]) "Must be selected one of: 'a', 'f', 'b', 'c', 'd', 'g' or 's'"]]
+   ["-r" "--is-randomized"]
    ["-h" "--help"]])
 
 (defn- ->input [args]

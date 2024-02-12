@@ -12,7 +12,15 @@
                                 :object {:default "g" :coerce :string}}]
                       (cli/parse-opts *command-line-args* {:spec spec})))
           (def tag (.format (java.time.LocalDateTime/now)
-                            (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd-HH-mm-ss"))))
+                            (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd-HH-mm-ss")))
+          (defn ->processed [{:keys [object from to warmup runs]} arg]
+            (shell (str "hyperfine "
+                        "--warmup " warmup " "
+                        "--shell none "
+                        "--runs " runs " "
+                        "--export-json ./data/generate-" from object to "-" tag ".json "
+                        "--parameter-scan points " from " " to " "
+                        "'./nulls -n {points} -o " object arg "'"))))
 
   build (let [file-name "nulls"
               file-jar (str file-name ".jar")
@@ -32,20 +40,5 @@
   plot (let [{:keys [path]} (cli/parse-opts *command-line-args* {:spec {:path {:coerce :string}}})]
          (shell (str "./script/plot.py" " " path)))
 
-  enumerate (let [{:keys [runs object from to warmup]} opts]
-              (shell (str "hyperfine "
-                          "--warmup " warmup " "
-                          "--shell none "
-                          "--runs " runs " "
-                          "--export-json ./data/enumerate-" from object to "-" tag ".json "
-                          "--parameter-scan points " from " " to " "
-                          "'./nulls -n {points} -o " object "'")))
-
-  generate (let [{:keys [object from to index warmup runs]} opts]
-             (shell (str "hyperfine "
-                         "--warmup " warmup " "
-                         "--shell none "
-                         "--runs " runs " "
-                         "--export-json ./data/generate-" from object to "-" tag ".json "
-                         "--parameter-scan points " from " " to " "
-                         "'./nulls -n {points} -o " object " -m " index "'")))}}
+  enumerate (->processed opts "")
+  generate (->processed opts " -r ")}}

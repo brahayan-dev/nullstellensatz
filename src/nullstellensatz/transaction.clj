@@ -29,18 +29,20 @@
                  "s" (irreducible-linked-diagram/enumerate n))]
       (assoc input :size size)) input))
 
-(defn- fetch-object [{:keys [fixed-size index object space errors] :as input}]
-  (if (and index (empty? errors))
+(defn- fetch-object [{:keys [size fixed-size index object space errors is-randomized] :as input}]
+  (if (and (or is-randomized index) (empty? errors))
     (let [n space
           k fixed-size
+          selected-index (if is-randomized
+                           (-> size rand-int) index)
           generated (case object
-                      "a" (subset/generate n index)
-                      "f" (combination/generate n k index)
-                      "b" (set-partition/generate n index)
-                      "g" (labeled-connected-graph/generate n index)
-                      "d" (complete-linked-diagram/generate n index)
-                      "c" (noncrossing-linked-diagram/generate n index)
-                      "s" (irreducible-linked-diagram/generate n index))]
+                      "a" (subset/generate n selected-index)
+                      "f" (combination/generate n k selected-index)
+                      "b" (set-partition/generate n selected-index)
+                      "g" (labeled-connected-graph/generate n selected-index)
+                      "d" (complete-linked-diagram/generate n selected-index)
+                      "c" (noncrossing-linked-diagram/generate n selected-index)
+                      "s" (irreducible-linked-diagram/generate n selected-index))]
       (assoc input :generated generated)) input))
 
 (defn- validate-index [{:keys [size index errors] :as input}]
