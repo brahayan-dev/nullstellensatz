@@ -4,26 +4,26 @@
    [nullstellensatz.object.combination :as combination]
    [nullstellensatz.object.subset :as subset]))
 
-(defn- count-nodes ^Long [^Long k]
+(defn- count-nodes [k]
   ((comp dec round pow) 2 k))
 
-(defn- ->term ^Long
-  [^Long n ^Long k ^clojure.lang.ITransientCollection cache]
+(defn- ->term
+  [n k cache]
   (let [first-val (get cache k)
         label-val (count-nodes k)
         second-val (get cache (-' n k))
         binomial-val (combination/enumerate (-' n 2) (dec k))]
     (*' binomial-val label-val first-val second-val)))
 
-(defn- ->updated-cache ^clojure.lang.ITransientCollection
-  [^Long i ^clojure.lang.ITransientCollection cache]
+(defn- ->updated-cache
+  [i cache]
   (loop [k 1 acc 0]
     (if (> k (dec i))
       (assoc! cache i acc)
       (let [value (->term i k cache)]
         (recur (inc k) (+' acc value))))))
 
-(defn enumerate ^Long [^Long n]
+(defn enumerate  [n]
   (loop [i 2 cache (transient {1 1})]
     (if (> i n) (get cache n)
         (recur (inc i) (->updated-cache i cache)))))
