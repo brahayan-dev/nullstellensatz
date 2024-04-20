@@ -1,8 +1,9 @@
 (ns nullstellensatz.object.labeled-connected-graph
-  (:require
-   [clojure.math :refer [pow round]]
-   [nullstellensatz.object.combination :as combination]
-   [nullstellensatz.object.subset :as subset]))
+  (:require [clojure.math :refer [pow round]]
+            [nullstellensatz.common :as common]
+            [schema.core :as s]
+            [nullstellensatz.object.combination :as combination]
+            [nullstellensatz.object.subset :as subset]))
 
 (defn- count-nodes [k]
   ((comp dec round pow) 2 k))
@@ -59,11 +60,11 @@
   (let [a (get cache p)]
     [n k t v (quot r a) (rem r a)]))
 
-(defn unrank [n r]
+(defn unrank [n m]
   (case n
     0 [0 0 0 0 0 0]
     1 [1 1 0 0 0 0]
-    ((comp ->element ->node ->tag ->location) n r)))
+    ((comp ->element ->node ->tag ->location) n m)))
 
 (def ^:private atomic-cache (atom {}))
 
@@ -127,6 +128,22 @@
                  ((comp vec assemble compact) cache item))]
     (assoc cache n object)))
 
-(defn generate [n r]
-  (let [codes (unwrap n r)]
+(defn generate [n m]
+  (let [codes (unwrap n m)]
     (as-> codes $ (reduce ->graph {} $) (get $ n))))
+
+(s/defschema EnumerateSchema
+  {:n s/Int})
+
+(def export-enumerate
+  (common/->Export
+   EnumerateSchema ::enumerate
+   (fn [{:keys [n]}] (enumerate n))))
+
+(s/defschema GenerateSchema
+  {:n s/Int :m s/Int})
+
+(def export-generate
+  (common/->Export
+   GenerateSchema ::generate
+   (fn [{:keys [n m]}] (generate n m))))

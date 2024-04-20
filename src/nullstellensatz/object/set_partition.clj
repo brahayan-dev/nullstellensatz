@@ -1,4 +1,6 @@
-(ns nullstellensatz.object.set-partition)
+(ns nullstellensatz.object.set-partition
+  (:require [schema.core :as s]
+            [nullstellensatz.common :as common]))
 
 (defn- ->restricted-growth-row [n i j answer]
   (if (> j (-' n i)) answer
@@ -18,24 +20,40 @@
   (let [table (->restricted-growth-table n)]
     (get-in table [n 0])))
 
-(defn unrank [n r]
+(defn unrank [n m]
   (let [table (->restricted-growth-table n)]
-    (loop [i 2 j 1 r r answer {1 1}]
+    (loop [i 2 j 1 m m answer {1 1}]
       (if (> i n) answer
           (let [d (get-in table [(-' n i) j])
-                jump? (>= r (*' j d))
+                jump? (>= m (*' j d))
                 ->add #(assoc answer i %)]
             (recur (inc i)
                    (if jump? (inc j) j)
-                   (if jump? (-' r (*' j d)) (mod r d))
+                   (if jump? (-' m (*' j d)) (mod m d))
                    (if jump?
                      (->add (inc j))
-                     (->add (inc (quot r d))))))))))
+                     (->add (inc (quot m d))))))))))
 
-(defn generate [n r]
-  (let [code (unrank n r)
+(defn generate [n m]
+  (let [code (unrank n m)
         structure (as-> code $
                     (vals $)
                     (apply max $)
                     (repeat $ []) (vec $))]
     (reduce (fn [s [k v]] (update s (dec v) conj k)) structure code)))
+
+(s/defschema EnumerateSchema
+  {:n s/Int})
+
+(def export-enumerate
+  (common/->Export
+   EnumerateSchema ::enumerate
+   (fn [{:keys [n]}] (enumerate n))))
+
+(s/defschema GenerateSchema
+  {:n s/Int :m s/Int})
+
+(def export-generate
+  (common/->Export
+   GenerateSchema ::generate
+   (fn [{:keys [n m]}] (generate n m))))

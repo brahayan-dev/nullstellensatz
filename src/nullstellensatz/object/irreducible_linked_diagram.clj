@@ -1,4 +1,6 @@
-(ns nullstellensatz.object.irreducible-linked-diagram)
+(ns nullstellensatz.object.irreducible-linked-diagram
+  (:require [nullstellensatz.common :as common]
+            [schema.core :as s]))
 
 (defn- ->term [n k cache]
   (let [first-val (get cache k)
@@ -43,11 +45,11 @@
         b (rem r v)]
     (vector n k j a b)))
 
-(defn unrank [n r]
+(defn unrank [n m]
   (case n
     1 [1 1 0 0 0]
     2 [2 1 0 0 0]
-    ((comp ->element ->slot ->location) n r)))
+    ((comp ->element ->slot ->location) n m)))
 
 ;; FIXME: What happen when k > 2|x| - 2?
 (defn ->add [k_ x-code y-code]
@@ -67,11 +69,27 @@
                           :else [(+' a k) (+' b k)]))]
     (concat (map ->first-part x-code) (map ->second-part y-code))))
 
-(defn generate [n r]
-  (let [[_ k j a b] (unrank n r)
+(defn generate [n m]
+  (let [[_ k j a b] (unrank n m)
         p (-' n k)]
     (if (= n 1)
       [[1 2]]
       (->add j
              (generate k a)
              (generate p b)))))
+
+(s/defschema EnumerateSchema
+  {:n s/Int})
+
+(def export-enumerate
+  (common/->Export
+   EnumerateSchema ::enumerate
+   (fn [{:keys [n]}] (enumerate n))))
+
+(s/defschema GenerateSchema
+  {:n s/Int :m s/Int})
+
+(def export-generate
+  (common/->Export
+   GenerateSchema ::generate
+   (fn [{:keys [n m]}] (generate n m))))

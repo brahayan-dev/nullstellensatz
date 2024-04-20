@@ -9,18 +9,18 @@
                                 :runs {:default 10 :coerce :long}
                                 :index {:default 0 :coerce :long}
                                 :warmup {:default 5 :coerce :long}
-                                :object {:default "g" :coerce :string}}]
+                                :object {:default "subset" :coerce :string}}]
                       (cli/parse-opts *command-line-args* {:spec spec})))
           (def tag (.format (java.time.LocalDateTime/now)
                             (java.time.format.DateTimeFormatter/ofPattern "yyyy-MM-dd-HH-mm-ss")))
-          (defn ->processed [{:keys [object from to warmup runs]} arg]
+          (defn ->processed [{:keys [object from to warmup runs]} operation args]
             (shell (str "hyperfine "
                         "--warmup " warmup " "
                         "--shell none "
                         "--runs " runs " "
-                        "--export-json ./data/generate-" from object to "-" tag ".json "
+                        "--export-json ./data/" operation "-" object "-object-from-" from "-to-" to "__" tag ".json "
                         "--parameter-scan points " from " " to " "
-                        "'./nulls -n {points} -o " object arg "'"))))
+                        "'./nulls --" operation "-" object "-object " args "'"))))
 
   build (let [file-name "nulls"
               file-jar (str file-name ".jar")
@@ -40,5 +40,5 @@
   plot (let [{:keys [path]} (cli/parse-opts *command-line-args* {:spec {:path {:coerce :string}}})]
          (shell (str "./script/plot.py" " " path)))
 
-  enumerate (->processed opts "")
-  generate (->processed opts " -m 0 -r ")}}
+  generate (->processed opts "generate" "\"{:n {points} :m 0}\"")
+  enumerate (->processed opts "enumerate" "\"{:n {points}}\"")}}
