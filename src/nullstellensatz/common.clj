@@ -1,16 +1,21 @@
 (ns nullstellensatz.common
-  (:require [schema.core :as s]))
+  (:require [schema.core :as s]
+            [clojure.string :refer [split join]]))
 
-(defn- ->names [kind]
-  (case kind
-    :g ["-g" "--generate-"]
-    :e ["-e" "--enumerate-"]))
+(defn- ->object [id]
+  (as-> id $
+    (namespace $)
+    (split $ #"\.")
+    (drop 1 $)
+    (reverse $)
+    (join "-" $)))
 
-(defn ->options [kind letter object schema]
-  (let [[short-name long-name] (->names kind)]
-    [(str short-name letter)
-     (str long-name object " " (quote schema))
-     (s/explain schema)
+(defn ->options [id schema]
+  (let [process (name id)
+        object (->object id)
+        description (-> schema s/explain str)
+        command (str "--" process "-" object " " "SCHEMA")]
+    (println id)
+    [nil command description
      :parse-fn read-string
-     :validate-msg [#(s/explain schema)]
-     :validate-fn [#(s/validate schema %)]]))
+     :validate [#(s/validate schema %) description]]))

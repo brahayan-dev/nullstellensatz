@@ -8,8 +8,8 @@
 (s/defschema GenerateSchema
   {:n s/Int :m s/Int})
 
-(def generate-options (->options :g "a" "subsets" GenerateSchema))
-(def enumerate-options (->options :e "a" "subsets" EnumerateSchema))
+(def generate-options (->options ::generate GenerateSchema))
+(def enumerate-options (->options ::enumerate EnumerateSchema))
 
 (defn enumerate [n] (->> n (Math/pow 2) Math/round))
 

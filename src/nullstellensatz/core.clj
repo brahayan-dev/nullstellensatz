@@ -12,9 +12,10 @@
   [["-r" "--randomized"]
    ["-h" "--help"]])
 
-(defn- ->input [args]
-  (letfn [(connect [& opts] (into [] (concat opts)))]
-    (parse-opts args (connect laboratory-options default-options))))
+(defn ->input [args]
+  (->> laboratory-options
+       (concat default-options)
+       (into []) (parse-opts args)))
 
 (defn -main [& args]
   (-> args ->input println))
