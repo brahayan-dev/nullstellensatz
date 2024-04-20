@@ -25,8 +25,9 @@
        (concat default-options)
        (into []) (parse-opts args)))
 
-(defn- ->output [{:keys [options errors]}]
-  (or errors (reactor options)))
+(defn- ->output [{:keys [options errors summary]}]
+  (if (:help options) summary
+      (or errors (reactor options))))
 
 (defn -main [& args]
   (-> args ->input ->output println))
