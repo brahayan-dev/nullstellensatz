@@ -1,4 +1,6 @@
-(ns nullstellensatz.object.complete-linked-diagram)
+(ns nullstellensatz.object.complete-linked-diagram
+  (:require [nullstellensatz.common :as common]
+            [schema.core :as s]))
 
 (defn enumerate [n]
   (loop [k 1 answer 1]
@@ -29,8 +31,8 @@
           y (quot p k)]
       (recur x (rest products) (cons y representation)))))
 
-(defn unrank [n r]
-  ((comp vec ->code) r (->products n) []))
+(defn unrank [n m]
+  ((comp vec ->code) m (->products n) []))
 
 (defn- ->structure [code pairs]
   (loop [code code pairs pairs answer []]
@@ -43,10 +45,26 @@
                              (cons new-pair))]
           (recur (rest code) (rest pairs) structure)))))
 
-(defn generate [n r]
+(defn generate [n m]
   (let [n_ (*' 2 n)
         a (range 0 n_ 2)
         b (range 1 n_ 2)
-        code (unrank n r)
+        code (unrank n m)
         pairs (mapv vector a b)]
     ((comp set ->structure) code pairs)))
+
+(s/defschema EnumerateSchema
+  {:n s/Int})
+
+(def export-enumerate
+  (common/->Export
+   EnumerateSchema ::enumerate
+   (fn [{:keys [n]}] (enumerate n))))
+
+(s/defschema GenerateSchema
+  {:n s/Int :m s/Int})
+
+(def export-generate
+  (common/->Export
+   GenerateSchema ::generate
+   (fn [{:keys [n m]}] (generate n m))))
