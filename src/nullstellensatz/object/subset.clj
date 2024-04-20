@@ -1,17 +1,6 @@
 (ns nullstellensatz.object.subset
   (:require [schema.core :as s]
-            [nullstellensatz.common :refer [->options ->identifier]]))
-
-(s/defschema EnumerateSchema
-  {:n s/Int})
-
-(s/defschema GenerateSchema
-  {:n s/Int :m s/Int})
-
-(def generate-id (->identifier ::generate))
-(def enumerate-id (->identifier ::enumerate))
-(def generate-options (->options ::generate GenerateSchema))
-(def enumerate-options (->options ::enumerate EnumerateSchema))
+            [nullstellensatz.common :as common]))
 
 (defn enumerate [n] (->> n (Math/pow 2) Math/round))
 
@@ -25,5 +14,18 @@
                  (if jump? (-' m size) m)
                  (if jump? (cons n answer) answer))))))
 
-(defn ->enumerated [{:keys [n]}] (enumerate n))
-(defn ->generated [{:keys [n m]}] (generate n m))
+(s/defschema EnumerateSchema
+  {:n s/Int})
+
+(def export-enumerate
+  (common/->Export
+   EnumerateSchema ::enumerate
+   (fn [{:keys [n]}] (enumerate n))))
+
+(s/defschema GenerateSchema
+  {:n s/Int :m s/Int})
+
+(def export-generate
+  (common/->Export
+   GenerateSchema ::generate
+   (fn [{:keys [n m]}] (generate n m))))
