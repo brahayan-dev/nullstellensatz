@@ -4,7 +4,7 @@
   (if (zero? n) answer
       (let [[head & tail] items]
         (recur tail
-               (count tail)
+               (dec n)
                (if (> head answer) head answer)))))
 
 (defn ->maximum [items]
