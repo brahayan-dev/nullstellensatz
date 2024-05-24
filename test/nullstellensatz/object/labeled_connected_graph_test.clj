@@ -15,26 +15,21 @@
 (deftest check-unrank
   (is (match? [1 1 0 0 0 0] (connected/unrank 1 0)))
   (is (match? [2 1 0 0 0 0] (connected/unrank 2 0)))
-
   (is (match? [3 1 0 0 0 0] (connected/unrank 3 0)))
   (is (match? [3 2 0 0 0 0] (connected/unrank 3 1)))
   (is (match? [3 2 0 1 0 0] (connected/unrank 3 2)))
   (is (match? [3 2 0 2 0 0] (connected/unrank 3 3)))
-
   (is (match? [4 2 0 0 0 0] (connected/unrank 4 4)))
   (is (match? [4 2 1 0 0 0] (connected/unrank 4 7)))
   (is (match? [4 3 0 4 3 0] (connected/unrank 4 29)))
   (is (match? [4 3 0 6 3 0] (connected/unrank 4 37)))
-
   (is (match? [5 2 2 0 0 1] (connected/unrank 5 63)))
   (is (match? [5 3 2 5 2 0] (connected/unrank 5 152)))
   (is (match? [5 4 0 10 14 0] (connected/unrank 5 552)))
-
   (is (match? [6 3 4 5 2 3] (connected/unrank 6 1723)))
   (is (match? [6 2 2 1 0 29] (connected/unrank 6 1023)))
   (is (match? [6 4 2 3 13 0] (connected/unrank 6 3123)))
   (is (match? [6 1 0 0 0 723] (connected/unrank 6 723)))
-
   (is (match? [7 3 2 2 1 29] (connected/unrank 7 40123)))
   (is (match? [8 4 12 10 4 4] (connected/unrank 8 2927204))))
 
@@ -61,7 +56,6 @@
   (is (match? [3 2 [1 2] [1] [[1 2]] [[1]]] (connected/compact cache [3 2 0 0 0 0])))
   (is (match? [3 2 [1 2] [2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 1 0 0])))
   (is (match? [3 2 [1 2] [1 2] [[1 2]] [[1]]] (connected/compact cache [3 2 0 2 0 0])))
-
   (is (match? [4 1 [1] [1] [[1]] [[1 2] [2 3]]]
               (connected/compact (assoc cache 3 [[1 2] [2 3]]) [4 1 0 0 0 2]))))
 
