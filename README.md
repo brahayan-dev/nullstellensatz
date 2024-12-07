@@ -1,5 +1,10 @@
 # CLI | nullstellensatz
 
+> "The Hilbert's Nullstellensatz is a celebrated theorem which allow us to construct a 'dictionary' between Geometry (varieties) and Algebra (ideals)."
+> - David Cox et al.
+
+The nullstellensatz cli is a tool to construct a 'dictionary' between Combinatorics and Theory of Algorithms.
+
 ## Build
 
 This project is based in [Clojure](https://clojure.org/guides/install_clojure). To generate the CLI and run benchmarks the next dependencies are needed:
