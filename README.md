@@ -49,24 +49,24 @@ Finally, running the `bb build` command, this will generate the CLI `nulls`.
 ```
 
 ``` sh
-# Enumerates the quantity of catalan objects for the finite set [3]
-./nulls --enumerate-catalan-family-object "{:n 3}" # => 5
-# Generates the object with index 3 (a dyck path) in the finite set [3]
-./nulls --generate-catalan-family-object "{:n 3 :m 3}" # => [[0 0] [1 1] [2 2] [3 1] [4 0] [5 1] [6 0]]
+# Enumerates the quantity of complete linked diagrams for the finite set [3]
+./nulls --enumerate-complete-linked-diagram-object "{:n 3}" # => 15
+# Generates the object with index 11 (a complete linked diagram) in the finite set [3]
+./nulls --generate-complete-linked-diagram-object "{:n 3 :m 11}" # => #{#{0 1} #{3 5} #{4 2}}
 ```
 
 ``` sh
-# Enumerates the quantity of catalan objects for the finite set [3]
-./nulls --enumerate-catalan-family-object "{:n 3}" # => 5
-# Generates the object with index 3 (a dyck path) in the finite set [3]
-./nulls --generate-catalan-family-object "{:n 3 :m 3}" # => [[0 0] [1 1] [2 2] [3 1] [4 0] [5 1] [6 0]]
+# Enumerates the quantity of irreducible linked diagrams for the finite set [5]
+./nulls --enumerate-irreducible-linked-diagram-object "{:n 5}" # => 248
+# Generates the object with index 200 (a irreducible linked diagram) in the finite set [5]
+./nulls --generate-irreducible-linked-diagram-object "{:n 5 :m 200}" # => ([1 3] [2 8] [4 6] [5 9] [7 10])
 ```
 
 ``` sh
-# Enumerates the quantity of catalan objects for the finite set [3]
-./nulls --enumerate-catalan-family-object "{:n 3}" # => 5
-# Generates the object with index 3 (a dyck path) in the finite set [3]
-./nulls --generate-catalan-family-object "{:n 3 :m 3}" # => [[0 0] [1 1] [2 2] [3 1] [4 0] [5 1] [6 0]]
+# Enumerates the quantity of labeled connected graphs for the finite set [5]
+./nulls --enumerate-labeled-connected-graph-object "{:n 5}" # => 728
+# Generates the object with index 700 (a labeled connected graph) in the finite set [5]
+ $ ./nulls --generate-labeled-connected-graph-object "{:n 5 :m 700}" # => [[2 3] [1 3] [1 4] [1 5] [2 5] [3 5] [4 5]]
 ```
 
 ## Benchmarks
