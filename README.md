@@ -66,7 +66,7 @@ Finally, running the `bb build` command, this will generate the CLI `nulls`.
 # Enumerates the quantity of labeled connected graphs for the finite set [5]
 ./nulls --enumerate-labeled-connected-graph-object "{:n 5}" # => 728
 # Generates the object with index 700 (a labeled connected graph) in the finite set [5]
- $ ./nulls --generate-labeled-connected-graph-object "{:n 5 :m 700}" # => [[2 3] [1 3] [1 4] [1 5] [2 5] [3 5] [4 5]]
+./nulls --generate-labeled-connected-graph-object "{:n 5 :m 700}" # => [[2 3] [1 3] [1 4] [1 5] [2 5] [3 5] [4 5]]
 ```
 
 ## Benchmarks
