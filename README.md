@@ -3,7 +3,7 @@
 > "The Hilbert's Nullstellensatz is a celebrated theorem which allow us to construct a 'dictionary' between Geometry (varieties) and Algebra (ideals)."
 > -- David Cox et al.
 
-The nullstellensatz CLI is a tool to construct a 'dictionary' between Combinatorics and Theory of Algorithms.
+The nullstellensatz CLI is a tool to construct a 'dictionary' between Combinatorics and Theory of Algorithms. It is part of my [master's thesis](https://repository.javeriana.edu.co/items/e4992668-7cda-411b-846a-5e977e866562) in mathematical science.
 
 ## Build
 
@@ -15,6 +15,16 @@ This project is based in [Clojure](https://clojure.org/guides/install_clojure). 
 - [GraalVM](https://www.graalvm.org/downloads/): Advanced JDK with ahead-of-time native image compilation.
 - [Babashka](https://github.com/babashka/babashka): Native Clojure interpreter for scripting with fast startup.
 - [Matplotlib](https://matplotlib.org/): Visualization with Python.
+
+### Ubuntu
+
+In Ubuntu we can follow the next commands to install dependencies
+```sh
+sudo apt install python3-matplotlib leiningen hyperfine build-essential zlib1g-dev
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install java 23.0.1-graal
+```
 
 Finally, running the `bb build` command, this will generate the CLI `nulls`.
 
