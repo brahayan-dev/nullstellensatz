@@ -2,12 +2,12 @@
   (:require [nullstellensatz.common :as common]
             [schema.core :as s]))
 
-(defn enumerate [n]
-  (loop [k 1 answer 1]
-    (if (> k n) answer
-        (let [factor (dec (*' 2 k))
-              updated-answer (*' answer factor)]
-          (recur (inc k) updated-answer)))))
+(defn- enumerate*
+  "Number of complete linked diagrams on n arcs: product of (2k-1) for k=1..n."
+  [n]
+  (reduce *' (map #(dec (*' 2 %)) (range 1 (inc n)))))
+
+(def enumerate (memoize enumerate*))
 
 (defn- ->updated-structure [[free open] structure]
   (letfn [(->new-structure [pair]

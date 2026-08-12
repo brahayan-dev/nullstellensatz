@@ -8,7 +8,7 @@
                       (*' j (get-in answer [(dec i) j])))]
         (recur n i
                (inc j)
-               (-> answer (assoc-in [i j] value))))))
+               (assoc-in answer [i j] value)))))
 
 (defn- ->restricted-growth-table [n]
   (loop [i 1 answer [(-> n inc (repeat 1) vec)]]
@@ -16,9 +16,13 @@
         (recur (inc i)
                (->restricted-growth-row n i 0 (conj answer []))))))
 
-(defn enumerate [n]
+(defn- enumerate*
+  "Bell number B_n via the restricted-growth-string table."
+  [n]
   (let [table (->restricted-growth-table n)]
     (get-in table [n 0])))
+
+(def enumerate (memoize enumerate*))
 
 (defn unrank [n m]
   (let [table (->restricted-growth-table n)]

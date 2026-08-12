@@ -2,13 +2,13 @@
   (:require [schema.core :as s]
             [nullstellensatz.common :as common]))
 
-(defn enumerate [n] (->> n (Math/pow 2) Math/round))
+(defn enumerate [n] (bit-shift-left 1 n))
 
 (defn generate [n m]
   (loop [n n m m answer []]
     (if (zero? n) answer
         (let [n_ (dec n)
-              size (enumerate n_)
+              size (bit-shift-left 1 n_)
               jump? (< size m)]
           (recur n_
                  (if jump? (-' m size) m)

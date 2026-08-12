@@ -2,23 +2,19 @@
   (:require [schema.core :as s]
             [nullstellensatz.common :as common]))
 
-(defn- factorial [n]
-  (if (<= n 1) 1
-      (loop [i 2 acc 1]
-        (if (> i n) acc
-            (recur (inc i) (*' acc i))))))
+(defn- enumerate*
+  "Binomial coefficient C(n,k) via telescoping product.
+  Avoids computing full factorials, keeping intermediate numbers smaller."
+  [n k]
+  (cond
+    (neg? k) 0
+    (or (neg? n) (> k n)) 0
+    (or (zero? k) (= k n)) 1
+    :else (loop [i 0 acc 1]
+            (if (= i k) acc
+                (recur (inc i) (quot (*' acc (-' n i)) (inc i)))))))
 
-(defn- rising-factorial [n k]
-  (let [k_ (dec k)]
-    (loop [i 0 acc 1]
-      (if (> i k_) acc
-          (recur (inc i) (*' acc (-' n i)))))))
-
-(defn enumerate [n k]
-  (if (neg? k) 0
-      (let [k-val (factorial k)
-            p-val (rising-factorial n k)]
-        (quot p-val k-val))))
+(def enumerate (memoize enumerate*))
 
 (defn generate [n k m]
   (loop [n n k k m m answer []]

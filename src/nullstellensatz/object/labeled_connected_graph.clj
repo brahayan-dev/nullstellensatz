@@ -1,12 +1,11 @@
 (ns nullstellensatz.object.labeled-connected-graph
-  (:require [clojure.math :refer [pow round]]
-            [nullstellensatz.common :as common]
+  (:require [nullstellensatz.common :as common]
             [schema.core :as s]
             [nullstellensatz.object.combination :as combination]
             [nullstellensatz.object.subset :as subset]))
 
 (defn- count-nodes [k]
-  ((comp dec round pow) 2 k))
+  (dec (reduce *' (repeat k 2))))
 
 (defn- ->term
   [n k cache]
@@ -24,40 +23,47 @@
       (let [value (->term i k cache)]
         (recur (inc k) (+' acc value))))))
 
-(defn enumerate  [n]
-  (loop [i 2 cache (transient {1 1})]
-    (if (> i n) (get cache n)
-        (recur (inc i) (->updated-cache i cache)))))
+(defn- enumerate*
+  "Number of labeled connected graphs on n nodes, via the recurrence
+  C(n) = 2^binom(n-1,2) - sum_{k=1}^{n-1} binom(n-2,k-1) * (2^k - 1) * C(k) * C(n-k)."
+  [n]
+  (cond
+    (<= n 0) 0
+    (= n 1) 1
+    :else (loop [i 2 cache (transient {1 1})]
+            (if (> i n) (get (persistent! cache) n)
+                (recur (inc i) (->updated-cache i cache))))))
+
+(def enumerate (memoize enumerate*))
 
 (defn- ->location [n r]
-  (loop [k 1 r r cache (transient {1 1})]
+  (loop [k 1 r r]
     (let [p (-' n k)
-          can-update? #(not (contains? cache %))
-          ->cache (fn [c i] (assoc! c i (enumerate i)))
-          updated-cache (cond-> cache
-                          (can-update? k) (->cache k)
-                          (can-update? p) (->cache p))
-          value (->term n k updated-cache)]
-      (if (< r value) {:r r :k k :n n :p p :cache updated-cache}
-          (recur (inc k) (-' r value) updated-cache)))))
+          label-val (count-nodes k)
+          first-val (enumerate k)
+          second-val (enumerate p)
+          binomial-val (combination/enumerate (-' n 2) (dec k))
+          value (*' binomial-val label-val first-val second-val)]
+      (if (< r value) {:r r :k k :n n :p p}
+          (recur (inc k) (-' r value))))))
 
-(defn- ->tag [{:keys [r p k cache] :as answer}]
-  (let [a (get cache k)
-        b (get cache p)
+(defn- ->tag [{:keys [r p k] :as answer}]
+  (let [a (enumerate k)
+        b (enumerate p)
         c (count-nodes k)]
     (assoc answer
            :r (rem r (*' a b c))
            :t (quot r (*' a b c)))))
 
-(defn- ->node [{:keys [k p r cache] :as answer}]
-  (let [a (get cache k)
-        b (get cache p)]
+(defn- ->node [{:keys [k p r] :as answer}]
+  (let [a (enumerate k)
+        b (enumerate p)]
     (assoc answer
            :r (rem r (*' a b))
            :v (quot r (*' a b)))))
 
-(defn- ->element [{:keys [n k t v r p cache]}]
-  (let [a (get cache p)]
+(defn- ->element [{:keys [n k t v r p]}]
+  (let [a (enumerate p)]
     [n k t v (quot r a) (rem r a)]))
 
 (defn unrank [n m]

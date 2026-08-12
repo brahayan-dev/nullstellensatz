@@ -9,38 +9,44 @@
     (*' index-val first-val second-val)))
 
 (defn- ->updated-cache [i cache]
-  (loop [k 1 answer []]
+  (loop [k 1 acc 0]
     (if (> k (dec i))
-      (assoc cache i (apply +' answer))
+      (assoc! cache i acc)
       (let [value (->term i k cache)]
-        (recur (inc k) (cons value answer))))))
+        (recur (inc k) (+' acc value))))))
 
-(defn enumerate [n]
-  (loop [i 3 cache {1 1 2 1}]
-    (if (> i n) (get cache n)
-        (recur (inc i) (->updated-cache i cache)))))
+(defn- enumerate*
+  "Number of irreducible linked diagrams on n arcs, via the recurrence
+  I(n) = sum_{k=1}^{n-1} (2k-1) * I(k) * I(n-k)."
+  [n]
+  (cond
+    (<= n 0) 0
+    (#{1 2} n) 1
+    :else (loop [i 3 cache (transient {1 1 2 1})]
+            (if (> i n) (get (persistent! cache) n)
+                (recur (inc i) (->updated-cache i cache))))))
+
+(def enumerate (memoize enumerate*))
 
 (defn- ->location [n r]
-  (loop [k 1 r r cache {1 1}]
+  (loop [k 1 r r]
     (let [p (-' n k)
-          can-update? #(not (contains? cache %))
-          ->cache (fn [c i] (assoc c i (enumerate i)))
-          updated-cache (cond-> cache
-                          (can-update? k) (->cache k)
-                          (can-update? p) (->cache p))
-          value (->term n k updated-cache)]
-      (if (< r value) {:r r :k k :n n :p p :cache updated-cache}
-          (recur (inc k) (-' r value) updated-cache)))))
+          index-val (dec (*' k 2))
+          first-val (enumerate k)
+          second-val (enumerate p)
+          value (*' index-val first-val second-val)]
+      (if (< r value) {:r r :k k :n n :p p}
+          (recur (inc k) (-' r value))))))
 
-(defn- ->slot [{:keys [r p k cache] :as answer}]
-  (let [a (get cache k)
-        b (get cache p)]
+(defn- ->slot [{:keys [r p k] :as answer}]
+  (let [a (enumerate k)
+        b (enumerate p)]
     (assoc answer
            :r (rem r (*' a b))
            :j (quot r (*' a b)))))
 
-(defn- ->element [{:keys [n k j p r cache]}]
-  (let [v (get cache p)
+(defn- ->element [{:keys [n k j p r]}]
+  (let [v (enumerate p)
         a (quot r v)
         b (rem r v)]
     (vector n k j a b)))
