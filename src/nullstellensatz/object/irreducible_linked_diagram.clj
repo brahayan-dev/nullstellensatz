@@ -8,7 +8,7 @@
         second-val (get cache (-' n k))]
     (*' index-val first-val second-val)))
 
-(defn ->updated-cache [i cache]
+(defn- ->updated-cache [i cache]
   (loop [k 1 answer []]
     (if (> k (dec i))
       (assoc cache i (apply +' answer))
@@ -51,8 +51,8 @@
     2 [2 1 0 0 0]
     ((comp ->element ->slot ->location) n m)))
 
-;; FIXME: What happen when k > 2|x| - 2?
-(defn ->add [k_ x-code y-code]
+;; FIXME: What happens when k > 2|x| - 2?
+(defn concat-codes [k_ x-code y-code]
   (let [k (inc k_)
         x-size (*' 2 (count x-code))
         y-size (dec (*' 2 (count y-code)))
@@ -74,9 +74,9 @@
         p (-' n k)]
     (if (= n 1)
       [[1 2]]
-      (->add j
-             (generate k a)
-             (generate p b)))))
+      (concat-codes j
+                    (generate k a)
+                    (generate p b)))))
 
 (s/defschema EnumerateSchema
   {:n s/Int})

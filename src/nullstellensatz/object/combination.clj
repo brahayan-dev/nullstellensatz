@@ -20,16 +20,16 @@
             p-val (rising-factorial n k)]
         (quot p-val k-val))))
 
-(defn generate [n  k  m]
-  (loop [n n k k index m answer []]
+(defn generate [n k m]
+  (loop [n n k k m m answer []]
     (if (or (zero? n) (zero? k)) (vec answer)
         (let [n_ (dec n)
               size (enumerate n_ k)
               same? (= n k)
-              jump? (< size index)]
+              jump? (< size m)]
           (recur n_
                  (if jump? (dec k) k)
-                 (if jump? (-' index size) index)
+                 (if jump? (-' m size) m)
                  (if (or same? jump?) (cons n answer) answer))))))
 
 (s/defschema EnumerateSchema

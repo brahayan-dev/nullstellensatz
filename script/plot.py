@@ -22,8 +22,8 @@ def get_labels(object_type):
     }[object_type]
 
 
-def show_curve_for_ge(indexes, object_type, algorithm_type):
-    if object_type == "g" and algorithm_type == "eumeration":
+def show_curve_for_graph_enumerate(indexes, object_type, algorithm_type):
+    if object_type == "g" and algorithm_type == "enumerate":
         estimations = [x for x in indexes]
         plt.plot(indexes, estimations, ".", color="#3cb31e")
 
@@ -40,7 +40,7 @@ def plot(means, object_type, algorithm_type):
     plt.ylabel("Time (seconds)")
     plt.grid(True, color="#e0e0e0", linestyle="--", linewidth=1)
 
-    show_curve_for_ge(indexes, object_type, algorithm_type)
+    show_curve_for_graph_enumerate(indexes, object_type, algorithm_type)
     plt.show()
 
 
@@ -61,8 +61,8 @@ def get_object_type(path):
 
 
 def load_json(path_to_file):
-    with open(path_to_file, "r") as path_to_file:
-        return json.load(path_to_file)
+    with open(path_to_file, "r") as file_handle:
+        return json.load(file_handle)
 
 
 def main(path):

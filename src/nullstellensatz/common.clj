@@ -2,7 +2,7 @@
   (:require [schema.core :as s]
             [clojure.string :refer [split join]]))
 
-(defn- ->element [k]
+(defn- ->object-keyword [k]
   (as-> k $
     (namespace $)
     (split $ #"\.")
@@ -10,14 +10,14 @@
     (reverse $)
     (join "-" $)))
 
-(defn- ->id [k]
+(defn- ->flag-id [k]
   (let [process (name k)
-        element (->element k)]
+        element (->object-keyword k)]
     (keyword (str process "-" element))))
 
-(defn- ->option [k schema]
-  (let [id (-> k ->id name)
-        command (str "--" id " " "SCHEMA")
+(defn- ->cli-option [k schema]
+  (let [id (-> k ->flag-id name)
+        command (str "--" id " " "<SCHEMA>")
         description (-> schema s/explain str)]
     [nil command description
      :parse-fn read-string
@@ -28,10 +28,10 @@
   "A protocol for exporting functions to CLI"
   (id [this])
   (option [this])
-  (trigger [this]))
+  (callback [this]))
 
 (defrecord Export [schema k callback]
   ExportProtocol
-  (id [this] (-> this :k ->id))
-  (trigger [this] (:callback this))
-  (option [this] (->option (:k this) (:schema this))))
+  (id [this] (-> this :k ->flag-id))
+  (callback [this] (:callback this))
+  (option [this] (->cli-option (:k this) (:schema this))))

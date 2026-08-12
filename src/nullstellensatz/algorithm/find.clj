@@ -1,14 +1,14 @@
 (ns nullstellensatz.algorithm.find)
 
-(defn- helper [items answer]
+(defn- max-loop [items answer]
   (if (empty? items) answer
       (let [[head & tail] items]
         (recur tail
                (if (> head answer) head answer)))))
 
-(defn ->maximum [items]
+(defn maximum [items]
   (cond
     (nil? items) nil
     (empty? items) nil
     :else (let [[head & tail] items]
-            (helper tail head))))
+             (max-loop tail head))))

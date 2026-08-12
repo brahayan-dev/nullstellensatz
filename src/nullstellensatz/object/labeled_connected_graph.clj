@@ -68,7 +68,7 @@
 
 (def ^:private atomic-cache (atom {}))
 
-(defn unwrap [m s]
+(defn expand-codes [m s]
   (letfn [(clear-cache [answer] (reset! atomic-cache {}) answer)
           (->prepared [answer] (-> answer vals sort vec))
           (->answer  [n r]
@@ -99,12 +99,12 @@
         tags (->> t inc (combination/generate n_ k_) (map inc) (cons 1) vec)]
     (vector n k tags nodes first-graph second-graph)))
 
-(defn- count-vertexes [nodes]
+(defn- count-vertices [nodes]
   (-> nodes flatten count))
 
 (defn relabel [graph labels]
   (let [labels_ (vec labels)]
-    (if (= 1 (count-vertexes graph))
+    (if (= 1 (count-vertices graph))
       (vector labels_)
       (->named-graph graph labels_))))
 
@@ -115,11 +115,11 @@
         h_ (relabel h complements)
         arcs (mapv #(vector % n) nodes)]
     (cond-> []
-      (< 1 (count-vertexes g_)) (concat g_)
-      (< 1 (count-vertexes h_)) (concat h_)
+      (< 1 (count-vertices g_)) (concat g_)
+      (< 1 (count-vertices h_)) (concat h_)
       true (concat arcs))))
 
-;; TODO: verify a huge case within cache-indexes
+;; TODO: verify a huge case within atomic-cache
 (defn- ->graph [cache item]
   (let [n (get item 0)
         object (case n
@@ -129,7 +129,7 @@
     (assoc cache n object)))
 
 (defn generate [n m]
-  (let [codes (unwrap n m)]
+  (let [codes (expand-codes n m)]
     (as-> codes $ (reduce ->graph {} $) (get $ n))))
 
 (s/defschema EnumerateSchema

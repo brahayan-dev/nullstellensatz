@@ -13,18 +13,18 @@
   (is (= 42 (catalan/enumerate 5)))
   (is (= 132 (catalan/enumerate 6))))
 
-(deftest check-count-mountain-ranges
-  (is (= 1 (catalan/count-mountain-ranges 5 5 5)))
-  (is (= 1 (catalan/count-mountain-ranges 5 6 4)))
-  (is (= 2 (catalan/count-mountain-ranges 5 7 1)))
-  (is (= 3 (catalan/count-mountain-ranges 5 6 2)))
-  (is (= 5 (catalan/count-mountain-ranges 5 4 4)))
-  (is (= 9 (catalan/count-mountain-ranges 5 4 2)))
-  (is (= 14 (catalan/count-mountain-ranges 5 2 0)))
-  (is (= 28 (catalan/count-mountain-ranges 5 2 2)))
-  (is (= 42 (catalan/count-mountain-ranges 5 0 0)))
-  (is (= 42 (catalan/count-mountain-ranges 5 1 1)))
-  (is (= 0 (catalan/count-mountain-ranges 5 10 2))))
+(deftest check-count-dyck-paths
+  (is (= 1 (catalan/count-dyck-paths 5 5 5)))
+  (is (= 1 (catalan/count-dyck-paths 5 6 4)))
+  (is (= 2 (catalan/count-dyck-paths 5 7 1)))
+  (is (= 3 (catalan/count-dyck-paths 5 6 2)))
+  (is (= 5 (catalan/count-dyck-paths 5 4 4)))
+  (is (= 9 (catalan/count-dyck-paths 5 4 2)))
+  (is (= 14 (catalan/count-dyck-paths 5 2 0)))
+  (is (= 28 (catalan/count-dyck-paths 5 2 2)))
+  (is (= 42 (catalan/count-dyck-paths 5 0 0)))
+  (is (= 42 (catalan/count-dyck-paths 5 1 1)))
+  (is (= 0 (catalan/count-dyck-paths 5 10 2))))
 
 (deftest check-unrank
   (is (match? [0 1] (catalan/unrank 1 0)))

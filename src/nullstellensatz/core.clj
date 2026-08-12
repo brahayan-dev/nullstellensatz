@@ -31,75 +31,31 @@
 
 (defmulti reactor #(-> % keys first))
 
-(def object-subset-export-enumerate-id (.id object.subset/export-enumerate))
-(def object-subset-export-enumerate-trigger (.trigger object.subset/export-enumerate))
-(defmethod reactor object-subset-export-enumerate-id [options]
-  (-> options object-subset-export-enumerate-id object-subset-export-enumerate-trigger))
+(def exports
+  [[object.subset/export-enumerate "subset"]
+   [object.subset/export-generate "subset"]
+   [object.combination/export-enumerate "combination"]
+   [object.combination/export-generate "combination"]
+   [object.set-partition/export-enumerate "set-partition"]
+   [object.set-partition/export-generate "set-partition"]
+   [object.catalan-family/export-enumerate "catalan-family"]
+   [object.catalan-family/export-generate "catalan-family"]
+   [object.complete-linked-diagram/export-enumerate "complete-linked-diagram"]
+   [object.complete-linked-diagram/export-generate "complete-linked-diagram"]
+   [object.irreducible-linked-diagram/export-enumerate "irreducible-linked-diagram"]
+   [object.irreducible-linked-diagram/export-generate "irreducible-linked-diagram"]
+   [object.labeled-connected-graph/export-enumerate "labeled-connected-graph"]
+   [object.labeled-connected-graph/export-generate "labeled-connected-graph"]])
 
-(def object-subset-export-generate-id (.id object.subset/export-generate))
-(def object-subset-export-generate-trigger (.trigger object.subset/export-generate))
-(defmethod reactor object-subset-export-generate-id [options]
-  (-> options object-subset-export-generate-id object-subset-export-generate-trigger))
-
-(def object-combination-export-enumerate-id (.id object.combination/export-enumerate))
-(def object-combination-export-enumerate-trigger (.trigger object.combination/export-enumerate))
-(defmethod reactor object-combination-export-enumerate-id [options]
-  (-> options object-combination-export-enumerate-id object-combination-export-enumerate-trigger))
-
-(def object-combination-export-generate-id (.id object.combination/export-generate))
-(def object-combination-export-generate-trigger (.trigger object.combination/export-generate))
-(defmethod reactor object-combination-export-generate-id [options]
-  (-> options object-combination-export-generate-id object-combination-export-generate-trigger))
-
-(def object-set-partition-export-enumerate-id (.id object.set-partition/export-enumerate))
-(def object-set-partition-export-enumerate-trigger (.trigger object.set-partition/export-enumerate))
-(defmethod reactor object-set-partition-export-enumerate-id [options]
-  (-> options object-set-partition-export-enumerate-id object-set-partition-export-enumerate-trigger))
-
-(def object-set-partition-export-generate-id (.id object.set-partition/export-generate))
-(def object-set-partition-export-generate-trigger (.trigger object.set-partition/export-generate))
-(defmethod reactor object-set-partition-export-generate-id [options]
-  (-> options object-set-partition-export-generate-id object-set-partition-export-generate-trigger))
-
-(def object-catalan-family-export-enumerate-id (.id object.catalan-family/export-enumerate))
-(def object-catalan-family-export-enumerate-trigger (.trigger object.catalan-family/export-enumerate))
-(defmethod reactor object-catalan-family-export-enumerate-id [options]
-  (-> options object-catalan-family-export-enumerate-id object-catalan-family-export-enumerate-trigger))
-
-(def object-catalan-family-export-generate-id (.id object.catalan-family/export-generate))
-(def object-catalan-family-export-generate-trigger (.trigger object.catalan-family/export-generate))
-(defmethod reactor object-catalan-family-export-generate-id [options]
-  (-> options object-catalan-family-export-generate-id object-catalan-family-export-generate-trigger))
-
-(def object-complete-linked-diagram-export-enumerate-id (.id object.complete-linked-diagram/export-enumerate))
-(def object-complete-linked-diagram-export-enumerate-trigger (.trigger object.complete-linked-diagram/export-enumerate))
-(defmethod reactor object-complete-linked-diagram-export-enumerate-id [options]
-  (-> options object-complete-linked-diagram-export-enumerate-id object-complete-linked-diagram-export-enumerate-trigger))
-
-(def object-complete-linked-diagram-export-generate-id (.id object.complete-linked-diagram/export-generate))
-(def object-complete-linked-diagram-export-generate-trigger (.trigger object.complete-linked-diagram/export-generate))
-(defmethod reactor object-complete-linked-diagram-export-generate-id [options]
-  (-> options object-complete-linked-diagram-export-generate-id object-complete-linked-diagram-export-generate-trigger))
-
-(def object-irreducible-linked-diagram-export-enumerate-id (.id object.irreducible-linked-diagram/export-enumerate))
-(def object-irreducible-linked-diagram-export-enumerate-trigger (.trigger object.irreducible-linked-diagram/export-enumerate))
-(defmethod reactor object-irreducible-linked-diagram-export-enumerate-id [options]
-  (-> options object-irreducible-linked-diagram-export-enumerate-id object-irreducible-linked-diagram-export-enumerate-trigger))
-
-(def object-irreducible-linked-diagram-export-generate-id (.id object.irreducible-linked-diagram/export-generate))
-(def object-irreducible-linked-diagram-export-generate-trigger (.trigger object.irreducible-linked-diagram/export-generate))
-(defmethod reactor object-irreducible-linked-diagram-export-generate-id [options]
-  (-> options object-irreducible-linked-diagram-export-generate-id object-irreducible-linked-diagram-export-generate-trigger))
-
-(def object-labeled-connected-graph-export-enumerate-id (.id object.labeled-connected-graph/export-enumerate))
-(def object-labeled-connected-graph-export-enumerate-trigger (.trigger object.labeled-connected-graph/export-enumerate))
-(defmethod reactor object-labeled-connected-graph-export-enumerate-id [options]
-  (-> options object-labeled-connected-graph-export-enumerate-id object-labeled-connected-graph-export-enumerate-trigger))
-
-(def object-labeled-connected-graph-export-generate-id (.id object.labeled-connected-graph/export-generate))
-(def object-labeled-connected-graph-export-generate-trigger (.trigger object.labeled-connected-graph/export-generate))
-(defmethod reactor object-labeled-connected-graph-export-generate-id [options]
-  (-> options object-labeled-connected-graph-export-generate-id object-labeled-connected-graph-export-generate-trigger))
+(doseq [[export name-suffix] exports]
+  (let [id (.id export)
+        callback (.callback export)
+        id-sym (symbol (str "object-" name-suffix "-export-" (name (:k export)) "-id"))
+        trigger-sym (symbol (str "object-" name-suffix "-export-" (name (:k export)) "-trigger"))]
+    (intern *ns* id-sym id)
+    (intern *ns* trigger-sym callback)
+    (defmethod reactor id [options]
+      (-> options id callback))))
 
 (defn- ->input [args]
   (->> laboratory-options

@@ -8,7 +8,7 @@
         binomial-val (combination/enumerate (*' 2 n) n)]
     (*' division-val binomial-val)))
 
-(defn count-mountain-ranges [n x y]
+(defn count-dyck-paths [n x y]
   (if (> (+' x y) (*' 2 n)) 0
       (let [average (quot (+' x y) 2)
             dynamic-set (-' (*' 2 n) x)
@@ -16,9 +16,9 @@
             q (combination/enumerate dynamic-set (-' n 1 average))]
         (-' p q))))
 
-(defn- unrank-helper [n i x y low answer]
+(defn- unrank-step [n i x y low answer]
   (if (= x ((comp inc *') n 2)) answer
-      (let [m (count-mountain-ranges n x (inc y))
+      (let [m (count-dyck-paths n x (inc y))
             jump? (<= i ((comp dec +') low m))]
         (recur n i
                (inc x)
@@ -27,7 +27,7 @@
                (-> jump? (if 1 0) (cons answer))))))
 
 (defn unrank [n m]
-  ((comp vec unrank-helper) n m 1 0 0 []))
+  ((comp vec unrank-step) n m 1 0 0 []))
 
 (defn generate
   "It generates a Dyck path"

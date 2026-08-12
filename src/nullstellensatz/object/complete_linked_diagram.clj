@@ -9,7 +9,7 @@
               updated-answer (*' answer factor)]
           (recur (inc k) updated-answer)))))
 
-(defn- update-structure [[free open] structure]
+(defn- ->updated-structure [[free open] structure]
   (letfn [(->new-structure [pair]
             (if (some #{open} pair)
               (->> pair
@@ -41,7 +41,7 @@
               [free-item close-item] (first pairs)
               new-pair #{open-item close-item}
               structure (->> answer
-                             (update-structure [free-item open-item])
+                             (->updated-structure [free-item open-item])
                              (cons new-pair))]
           (recur (rest code) (rest pairs) structure)))))
 
